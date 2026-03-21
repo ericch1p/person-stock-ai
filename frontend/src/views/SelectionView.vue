@@ -15,15 +15,38 @@
       <el-form :model="criteria" label-width="120px">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-divider content-position="left">技术面</el-divider>
+            <el-divider content-position="left">均线策略</el-divider>
             <el-form-item label="均线金叉">
               <el-switch v-model="criteria.ma_golden_cross" />
             </el-form-item>
-            <el-form-item label="均线多头">
+            <el-form-item label="均线多头排列">
               <el-switch v-model="criteria.ma_bullish_arrangement" />
             </el-form-item>
             <el-form-item label="MACD金叉">
               <el-switch v-model="criteria.macd_golden_cross" />
+            </el-form-item>
+            <el-form-item label="MACD水下金叉">
+              <el-switch v-model="criteria.macd_below_zero" />
+            </el-form-item>
+          </el-col>
+          
+          <el-col :span="12">
+            <el-divider content-position="left">摆动指标</el-divider>
+            <el-form-item label="KDJ金叉">
+              <el-switch v-model="criteria.kdj_golden_cross" />
+            </el-form-item>
+            <el-form-item label="KDJ超卖反弹">
+              <el-switch v-model="criteria.kdj_oversold" />
+            </el-form-item>
+            <el-form-item label="RSI超卖">
+              <el-switch v-model="criteria.rsi_oversold" />
+            </el-form-item>
+          </el-col>
+          
+          <el-col :span="12">
+            <el-divider content-position="left">通道策略</el-divider>
+            <el-form-item label="布林带">
+              <el-switch v-model="criteria.bollinger_band" />
             </el-form-item>
             <el-form-item label="放量突破">
               <el-switch v-model="criteria.volume_breakout" />
@@ -94,6 +117,16 @@
             {{ row.roe ? row.roe.toFixed(1) + '%' : '-' }}
           </template>
         </el-table-column>
+        <el-table-column label="KDJ" width="80">
+          <template #default="{ row }">
+            {{ row.indicators?.kdj_k?.toFixed(0) || '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="RSI" width="80">
+          <template #default="{ row }">
+            {{ row.indicators?.rsi?.toFixed(0) || '-' }}
+          </template>
+        </el-table-column>
         <el-table-column prop="match_score" label="匹配度" width="80">
           <template #default="{ row }">
             <el-tag type="success">{{ row.match_score?.toFixed(0) }}</el-tag>
@@ -129,16 +162,25 @@ const loading = ref(false)
 const results = ref([])
 
 const criteria = reactive({
+  // 均线策略
   exclude_st: true,
   ma_golden_cross: false,
   ma_bullish_arrangement: false,
   macd_golden_cross: false,
+  macd_below_zero: false,
+  
+  // 摆动指标
+  kdj_golden_cross: false,
+  kdj_oversold: false,
+  rsi_oversold: false,
+  
+  // 通道策略
+  bollinger_band: false,
   volume_breakout: false,
-  pe_min: null,
+  
+  // 基本面
   pe_max: null,
-  roe_min: null,
-  revenue_growth_min: null,
-  net_profit_growth_min: null
+  roe_min: null
 })
 
 const runSelection = async () => {

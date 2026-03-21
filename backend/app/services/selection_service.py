@@ -1,10 +1,8 @@
 """
 选股服务 - 实现各种选股策略
 """
-from datetime import date, timedelta
 from typing import Optional, List, Dict, Any
 import pandas as pd
-import numpy as np
 
 from .data_service import DataService
 
@@ -16,82 +14,52 @@ class SelectionService:
         self.data_service = DataService()
     
     async def select_stocks(self, criteria: Dict[str, Any]) -> List[Dict]:
-        """
-        根据条件选股
-        
-        Args:
-            criteria: 选股条件
-            
-        Returns:
-            选股结果列表
-        """
+        """根据条件选股"""
         results = []
-        
-        # 1. 获取所有股票
         stock_list = await self.data_service.list_stocks(limit=5000)
         stocks = stock_list.get("items", [])
         
-        # 2. 逐个筛选
         for stock in stocks:
             code = stock["code"]
-            
-            # 排除ST股票
             if criteria.get("exclude_st", True) and "ST" in (stock.get("name") or ""):
                 continue
             
             try:
-                # 获取K线数据
-                klines = await self.data_service.get_kline(code, limit=60)
+                klines = await self.data_service.get_kline(code, limit=120)
                 if len(klines) < 30:
                     continue
                 
-                # 技术面筛选
                 tech_result = self._check_technical(klines, criteria)
-                if not tech_result["passed"]:
-                    continue
-                
-                # 获取财务数据
                 financial = await self.data_service.get_financial(code)
-                
-                # 基本面筛选
                 fund_result = self._check_fundamental(financial, criteria)
-                if not fund_result["passed"]:
-                    continue
-                
-                # 资金面筛选（简化处理）
                 money_result = self._check_money(klines, criteria)
-                
-                # 综合评分
                 score = self._calculate_score(tech_result, fund_result, money_result)
                 
-                # 构建结果
-                result = {
-                    "code": code,
-                    "name": stock["name"],
-                    "industry": stock.get("industry"),
-                    "close": klines[-1]["close"] if klines else None,
-                    "change_pct": klines[-1]["change_pct"] if klines else None,
-                    "volume": klines[-1]["volume"] if klines else None,
-                    **tech_result,
-                    **fund_result,
-                    **money_result,
-                    "match_score": score,
-                    "match_reasons": self._get_match_reasons(tech_result, fund_result, money_result)
-                }
-                results.append(result)
-                
+                if score > 0 or criteria.get("show_all"):
+                    result = {
+                        "code": code,
+                        "name": stock["name"],
+                        "industry": stock.get("industry"),
+                        "close": klines[-1]["close"] if klines else None,
+                        "change_pct": klines[-1]["change_pct"] if klines else None,
+                        "volume": klines[-1]["volume"] if klines else None,
+                        **tech_result,
+                        **fund_result,
+                        **money_result,
+                        "match_score": score,
+                        "match_reasons": self._get_match_reasons(tech_result, fund_result, money_result)
+                    }
+                    results.append(result)
             except Exception as e:
                 print(f"筛选股票失败 {code}: {e}")
                 continue
         
-        # 按匹配度排序
         results.sort(key=lambda x: x.get("match_score", 0), reverse=True)
-        
-        return results[:100]  # 最多返回100只
-    
+        return results[:100]
+
     def _check_technical(self, klines: List[Dict], criteria: Dict) -> Dict:
         """技术面筛选"""
-        result = {"passed": False, "tech_score": 0, "ma_status": None, "macd_status": None}
+        result = {"passed": True, "tech_score": 0, "tech_signals": [], "indicators": {}}
         
         if len(klines) < 30:
             return result
@@ -109,169 +77,194 @@ class SelectionService:
         ema26 = df["close"].ewm(span=26, adjust=False).mean()
         dif = ema12 - ema26
         dea = dif.ewm(span=9, adjust=False).mean()
-        macd = (dif - dea) * 2
-        df["macd"] = macd
+        df["macd"] = (dif - dea) * 2
+        df["dif"] = dif
+        
+        # 计算KDJ
+        low14 = df["low"].rolling(9).min()
+        high14 = df["high"].rolling(9).max()
+        rsv = (df["close"] - low14) / (high14 - low14) * 100
+        df["kdj_k"] = rsv.ewm(com=2, adjust=False).mean()
+        df["kdj_d"] = df["kdj_k"].ewm(com=2, adjust=False).mean()
+        
+        # 计算RSI
+        delta = df["close"].diff()
+        gain = delta.where(delta > 0, 0).rolling(14).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(14).mean()
+        rs = gain / loss
+        df["rsi"] = 100 - (100 / (1 + rs))
+        
+        # 计算布林带
+        df["bb_mid"] = df["close"].rolling(20).mean()
+        df["bb_std"] = df["close"].rolling(20).std()
+        df["bb_upper"] = df["bb_mid"] + 2 * df["bb_std"]
+        df["bb_lower"] = df["bb_mid"] - 2 * df["bb_std"]
+        
+        # 计算成交量均线
+        df["vol_ma5"] = df["volume"].rolling(5).mean()
         
         last = df.iloc[-1]
         prev = df.iloc[-2]
         
         score = 0
-        reasons = []
+        signals = []
         
-        # 均线多头排列
+        # 策略1: 均线多头排列
         if criteria.get("ma_bullish_arrangement"):
             if last["ma5"] > last["ma10"] > last["ma20"] > last["ma60"]:
                 score += 30
-                result["ma_status"] = "多头排列"
+                signals.append("均线多头")
         
-        # 均线金叉
+        # 策略2: 均线金叉
         if criteria.get("ma_golden_cross"):
             if prev["ma5"] <= prev["ma10"] and last["ma5"] > last["ma10"]:
                 score += 25
-                result["ma_status"] = "金叉"
+                signals.append("MA5上穿MA10")
         
-        # MACD金叉
+        # 策略3: MACD金叉
         if criteria.get("macd_golden_cross"):
             if prev["macd"] <= 0 and last["macd"] > 0:
                 score += 25
-                result["macd_status"] = "金叉"
+                signals.append("MACD金叉")
         
-        # MACD水下金叉（在水下形成金叉更强）
+        # 策略4: MACD水下金叉
         if criteria.get("macd_below_zero"):
-            if dif.iloc[-2] < 0 and dif.iloc[-1] >= 0:
+            if len(df) >= 3 and df.iloc[-3]["dif"] < 0 and df.iloc[-2]["dif"] < 0 and last["dif"] >= 0:
                 score += 20
-                result["macd_status"] = "水下金叉"
+                signals.append("MACD水上金叉")
         
-        # 放量突破
-        if criteria.get("volume_breakout"):
-            avg_vol = df["volume"].iloc[-20:-1].mean()
-            if last["volume"] > avg_vol * 1.5:
+        # 策略5: KDJ金叉
+        if criteria.get("kdj_golden_cross"):
+            if prev["kdj_k"] <= prev["kdj_d"] and last["kdj_k"] > last["kdj_d"]:
                 score += 20
+                signals.append(f"KDJ金叉(K={last['kdj_k']:.0f})")
+        
+        # 策略6: KDJ超卖反弹
+        if criteria.get("kdj_oversold"):
+            if last["kdj_k"] < 25 and prev["kdj_k"] < last["kdj_k"]:
+                score += 25
+                signals.append("KDJ超卖反弹")
+        
+        # 策略7: RSI超卖
+        if criteria.get("rsi_oversold") and pd.notna(last["rsi"]):
+            if last["rsi"] < 30:
+                score += 25
+                signals.append("RSI超卖")
+        
+        # 策略8: 布林带策略
+        if criteria.get("bollinger_band"):
+            if pd.notna(last["bb_upper"]):
+                bb_pos = (last["close"] - last["bb_lower"]) / (last["bb_upper"] - last["bb_lower"])
+                if bb_pos > 0.8:
+                    score += 15
+                    signals.append("布林带上轨")
+                elif bb_pos < 0.2:
+                    score += 20
+                    signals.append("布林带下轨")
+        
+        # 策略9: 放量突破
+        if criteria.get("volume_breakout"):
+            if last["volume"] > last["vol_ma5"] * 1.5:
+                score += 15
+                signals.append("成交量放大")
         
         result["tech_score"] = score
-        
-        if score >= 20:  # 技术面得分门槛
-            result["passed"] = True
+        result["tech_signals"] = signals
+        result["indicators"] = {
+            "ma5": round(last["ma5"], 2) if pd.notna(last["ma5"]) else None,
+            "ma10": round(last["ma10"], 2) if pd.notna(last["ma10"]) else None,
+            "ma20": round(last["ma20"], 2) if pd.notna(last["ma20"]) else None,
+            "kdj_k": round(last["kdj_k"], 1) if pd.notna(last["kdj_k"]) else None,
+            "kdj_d": round(last["kdj_d"], 1) if pd.notna(last["kdj_d"]) else None,
+            "rsi": round(last["rsi"], 1) if pd.notna(last["rsi"]) else None,
+            "macd": round(last["macd"], 3) if pd.notna(last["macd"]) else None
+        }
         
         return result
-    
+
     def _check_fundamental(self, financial: Optional[Dict], criteria: Dict) -> Dict:
         """基本面筛选"""
-        result = {"passed": False, "fund_score": 0}
+        result = {"passed": True, "fund_score": 0, "fund_signals": []}
         
-        if financial is None:
+        if not financial:
             return result
         
         score = 0
+        signals = []
+        pe = financial.get("pe")
+        pb = financial.get("pb")
+        roe = financial.get("roe")
         
         # PE筛选
-        pe = financial.get("pe")
-        if pe:
-            pe_min = criteria.get("pe_min")
-            pe_max = criteria.get("pe_max")
-            if pe_min and pe < pe_min:
-                return result
-            if pe_max and pe > pe_max:
-                return result
-            if 10 <= pe <= 30:  # 合理PE范围
-                score += 15
+        if pe and criteria.get("pe_max"):
+            if pe < criteria["pe_max"]:
+                score += 10
+                signals.append(f"PE={pe:.1f}")
         
         # PB筛选
-        pb = financial.get("pb")
-        if pb:
-            pb_min = criteria.get("pb_min")
-            pb_max = criteria.get("pb_max")
-            if pb_min and pb < pb_min:
-                return result
-            if pb_max and pb > pb_max:
-                return result
-            if pb < 5:  # 低PB
+        if pb and criteria.get("pb_max"):
+            if pb < criteria["pb_max"]:
                 score += 10
+                signals.append(f"PB={pb:.1f}")
         
         # ROE筛选
-        roe = financial.get("roe")
         if roe and criteria.get("roe_min"):
             if roe >= criteria["roe_min"]:
-                score += 20
-            else:
-                return result
-        
-        # 营收增长
-        rev_growth = financial.get("revenue_growth")
-        if rev_growth and criteria.get("revenue_growth_min"):
-            if rev_growth >= criteria["revenue_growth_min"]:
                 score += 15
-        
-        # 净利润增长
-        profit_growth = financial.get("net_profit_growth")
-        if profit_growth and criteria.get("net_profit_growth_min"):
-            if profit_growth >= criteria["net_profit_growth_min"]:
-                score += 15
+                signals.append(f"ROE={roe:.1f}%")
         
         result["fund_score"] = score
-        result["pe"] = pe
-        result["pb"] = pb
-        result["roe"] = roe
-        
-        if score >= 15:
-            result["passed"] = True
+        result["fund_signals"] = signals
         
         return result
     
     def _check_money(self, klines: List[Dict], criteria: Dict) -> Dict:
-        """资金面筛选（简化版，基于成交量变化）"""
-        result = {"passed": False, "money_score": 0}
+        """资金面筛选"""
+        result = {"passed": True, "money_score": 0, "money_signals": []}
         
-        if len(klines) < 20:
+        if len(klines) < 5:
             return result
         
         df = pd.DataFrame(klines)
-        last = df.iloc[-1]
+        df["vol_ma5"] = df["volume"].rolling(5).mean()
+        df["vol_ma20"] = df["volume"].rolling(20).mean()
         
-        # 换手率估算（成交量/流通股本）
-        avg_vol = df["volume"].iloc[-20:-1].mean()
+        last = df.iloc[-1]
         score = 0
+        signals = []
         
         # 放量
-        if last["volume"] > avg_vol * 1.2:
-            score += 30
+        if criteria.get("volume_breakout"):
+            if last["volume"] > last["vol_ma5"] * 2:
+                score += 15
+                signals.append("大幅放量")
+            elif last["volume"] > last["vol_ma5"] * 1.5:
+                score += 10
+                signals.append("温和放量")
         
-        # 持续放量
-        recent_vol = df["volume"].iloc[-5:].mean()
-        if recent_vol > avg_vol:
-            score += 20
+        # 缩量
+        if criteria.get("volume_shrink"):
+            if last["volume"] < last["vol_ma5"] * 0.5:
+                score += 10
+                signals.append("成交量萎缩")
         
         result["money_score"] = score
-        result["volume"] = last["volume"]
-        
-        if score >= 20:
-            result["passed"] = True
+        result["money_signals"] = signals
         
         return result
     
-    def _calculate_score(self, tech: Dict, fund: Dict, money: Dict) -> float:
+    def _calculate_score(self, tech_result: Dict, fund_result: Dict, money_result: Dict) -> int:
         """计算综合评分"""
-        return (tech.get("tech_score", 0) * 0.4 + 
-                fund.get("fund_score", 0) * 0.4 + 
-                money.get("money_score", 0) * 0.2)
+        return (
+            tech_result.get("tech_score", 0) +
+            fund_result.get("fund_score", 0) +
+            money_result.get("money_score", 0)
+        )
     
-    def _get_match_reasons(self, tech: Dict, fund: Dict, money: Dict) -> List[str]:
+    def _get_match_reasons(self, tech_result: Dict, fund_result: Dict, money_result: Dict) -> List[str]:
         """获取匹配原因"""
         reasons = []
-        
-        if tech.get("ma_status"):
-            reasons.append(f"均线{tech['ma_status']}")
-        if tech.get("macd_status"):
-            reasons.append(f"MACD{tech['macd_status']}")
-        if tech.get("tech_score", 0) >= 30:
-            reasons.append("技术面强势")
-        
-        if fund.get("roe"):
-            reasons.append(f"ROE={fund['roe']:.1f}%")
-        if fund.get("fund_score", 0) >= 20:
-            reasons.append("基本面优良")
-        
-        if money.get("money_score", 0) >= 30:
-            reasons.append("资金活跃")
-        
-        return reasons
+        reasons.extend(tech_result.get("tech_signals", []))
+        reasons.extend(fund_result.get("fund_signals", []))
+        reasons.extend(money_result.get("money_signals", []))
+        return reasons[:5]  # 最多返回5个原因
