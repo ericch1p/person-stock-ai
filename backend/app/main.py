@@ -14,8 +14,6 @@ from .routers import (
     strategy_router,
     backtest_router,
     position_router,
-    watchlist_router,
-    trades_router,
     push_router,
 )
 from .tasks.scheduler import start_scheduler, stop_scheduler
@@ -66,8 +64,6 @@ app.include_router(selection_router)
 app.include_router(strategy_router)
 app.include_router(backtest_router)
 app.include_router(position_router)
-app.include_router(watchlist_router)
-app.include_router(trades_router)
 app.include_router(push_router)
 
 

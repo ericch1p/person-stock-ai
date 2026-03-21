@@ -1,7 +1,7 @@
 """
 策略定义模型
 """
-from sqlalchemy import Column, String, Date, Integer, Text, JSON
+from sqlalchemy import Column, String, Date, Integer, Text, JSON, Float
 from sqlalchemy.sql import func
 
 from ..database import Base

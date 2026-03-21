@@ -236,4 +236,30 @@ class DataService:
         ak = await self._get_akshare()
         
         try:
+            df = ak.stock_individual_fund_flow(stock=code, market='sh')
+            if df is None or df.empty:
+                df = ak.stock_individual_fund_flow(stock=code, market='sz')
+            if df is None or df.empty:
+                return False
+            
+            async with AsyncSessionLocal() as session:
+                for _, row in df.iterrows():
+                    try:
+                        flow = MoneyFlow(
+                            code=code,
+                            date=pd.to_datetime(row.get('日期')).date() if row.get('日期') else None,
+                            close_price=float(row.get('收盘价', 0)) if pd.notna(row.get('收盘价')) else None,
+                            turnover_rate=float(row.get('换手率', 0)) if pd.notna(row.get('换手率')) else None,
+                            net_amount=float(row.get('净流入', 0)) if pd.notna(row.get('净流入')) else None,
+                            buy_amount=float(row.get('买入', 0)) if pd.notna(row.get('买入')) else None,
+                            sell_amount=float(row.get('卖出', 0)) if pd.notna(row.get('卖出')) else None,
+                        )
+                        session.add(flow)
+                    except Exception:
+                        continue
+                await session.commit()
+            return True
+        except Exception as e:
+            logger.error(f"更新资金流向失败 {code}: {e}")
+            return False
             df = ak
