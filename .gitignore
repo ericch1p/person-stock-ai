@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.env
+.venv
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 数据库
+*.db
+*.sqlite
+
+# 数据和日志
+data/logs/
+data/cache/
+
+# 前后端构建产物
+backend/__pycache__/
+frontend/dist/
+frontend/node_modules/
+frontend/.DS_Store
+
+# 测试
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 其他
+*.log
+.DS_Store
+Thumbs.db
