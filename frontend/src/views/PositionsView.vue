@@ -1,29 +1,96 @@
 <template>
   <div class="positions-view">
+    <!-- 收益概览 -->
+    <el-row :gutter="20" class="mb-20" v-if="profitData.positions?.length">
+      <el-col :span="6">
+        <div class="stat-card">
+          <div class="stat-label">总市值</div>
+          <div class="stat-value">¥{{ profitData.total_value?.toFixed(2) }}</div>
+        </div>
+      </el-col>
+      <el-col :span="6">
+        <div class="stat-card">
+          <div class="stat-label">总成本</div>
+          <div class="stat-value">¥{{ profitData.total_cost?.toFixed(2) }}</div>
+        </div>
+      </el-col>
+      <el-col :span="6">
+        <div class="stat-card" :class="profitData.total_profit >= 0 ? 'profit' : 'loss'">
+          <div class="stat-label">总盈亏</div>
+          <div class="stat-value">
+            {{ profitData.total_profit >= 0 ? '+' : '' }}{{ profitData.total_profit?.toFixed(2) }}
+          </div>
+        </div>
+      </el-col>
+      <el-col :span="6">
+        <div class="stat-card" :class="profitData.total_profit_pct >= 0 ? 'profit' : 'loss'">
+          <div class="stat-label">收益率</div>
+          <div class="stat-value">
+            {{ profitData.total_profit_pct >= 0 ? '+' : '' }}{{ profitData.total_profit_pct?.toFixed(2) }}%
+          </div>
+        </div>
+      </el-col>
+    </el-row>
+
     <el-card>
       <template #header>
         <div class="card-header">
           <span>持仓管理</span>
-          <el-button type="primary" @click="showAddDialog">
-            <el-icon><Plus /></el-icon>
-            记录买入
-          </el-button>
+          <div>
+            <el-button type="info" @click="refreshProfit" :loading="refreshing">
+              <el-icon><Refresh /></el-icon>
+              刷新行情
+            </el-button>
+            <el-button type="primary" @click="showAddDialog">
+              <el-icon><Plus /></el-icon>
+              记录买入
+            </el-button>
+          </div>
         </div>
       </template>
       
-      <el-table :data="positions" stripe v-loading="loading">
-        <el-table-column prop="code" label="代码" width="100" />
+      <el-table :data="profitData.positions || []" stripe v-loading="loading">
+        <el-table-column prop="code" label="代码" width="100">
+          <template #default="{ row }">
+            <router-link :to="`/stock/${row.code}?name=${encodeURIComponent(row.name)}`">
+              {{ row.code }}
+            </router-link>
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="名称" width="120" />
-        <el-table-column prop="buy_date" label="买入日期" width="120" />
-        <el-table-column prop="buy_price" label="买入价" width="100">
+        <el-table-column prop="buy_date" label="买入日期" width="110" />
+        <el-table-column prop="buy_price" label="买入价" width="90">
           <template #default="{ row }">
             {{ row.buy_price?.toFixed(2) }}
           </template>
         </el-table-column>
-        <el-table-column prop="quantity" label="数量" width="100" />
-        <el-table-column prop="buy_amount" label="买入金额" width="120">
+        <el-table-column prop="current_price" label="现价" width="90">
           <template #default="{ row }">
-            {{ row.buy_amount?.toFixed(2) }}
+            <span :class="row.current_change >= 0 ? 'up' : 'down'">
+              {{ row.current_price?.toFixed(2) }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="current_change" label="涨跌幅" width="90">
+          <template #default="{ row }">
+            <span :class="row.current_change >= 0 ? 'up' : 'down'">
+              {{ row.current_change >= 0 ? '+' : '' }}{{ row.current_change?.toFixed(2) }}%
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="quantity" label="数量" width="80" />
+        <el-table-column prop="profit" label="盈亏" width="100">
+          <template #default="{ row }">
+            <span :class="row.profit >= 0 ? 'up' : 'down'">
+              {{ row.profit >= 0 ? '+' : '' }}{{ row.profit?.toFixed(2) }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="profit_pct" label="收益率" width="100">
+          <template #default="{ row }">
+            <span :class="row.profit_pct >= 0 ? 'up' : 'down'">
+              {{ row.profit_pct >= 0 ? '+' : '' }}{{ row.profit_pct?.toFixed(2) }}%
+            </span>
           </template>
         </el-table-column>
         <el-table-column prop="profit_loss" label="盈亏" width="100">
@@ -117,7 +184,9 @@ import api from '@/api'
 
 const route = useRoute()
 const loading = ref(false)
+const refreshing = ref(false)
 const positions = ref([])
+const profitData = ref({})
 const addDialogVisible = ref(false)
 const sellDialogVisible = ref(false)
 
@@ -144,10 +213,23 @@ const loadData = async () => {
   try {
     const res = await api.getPositions()
     positions.value = res.items || []
+    await refreshProfit()
   } catch (error) {
     ElMessage.error('加载失败')
   } finally {
     loading.value = false
+  }
+}
+
+const refreshProfit = async () => {
+  refreshing.value = true
+  try {
+    const res = await api.getPositionsProfit()
+    profitData.value = res || {}
+  } catch (error) {
+    console.error('获取盈亏失败:', error)
+  } finally {
+    refreshing.value = false
   }
 }
 
@@ -202,4 +284,20 @@ onMounted(loadData)
 }
 .up { color: #f56c6c; }
 .down { color: #67c23a; }
+</style>
+
+<style scoped>
+.stat-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-card.profit .stat-value { color: #ef5350; }
+.stat-card.loss .stat-value { color: #26a69a; }
+.stat-label { font-size: 13px; color: #909399; margin-bottom: 8px; }
+.stat-value { font-size: 24px; font-weight: bold; }
+.mb-20 { margin-bottom: 20px; }
+.up { color: #ef5350; }
+.down { color: #26a69a; }
 </style>

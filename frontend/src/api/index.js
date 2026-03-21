@@ -38,6 +38,7 @@ export default {
   
   // 持仓
   getPositions: (params) => api.get('/positions/', { params }),
+  getPositionsProfit: () => api.get('/positions/profit'),
   createPosition: (data) => api.post('/positions/', data),
   updatePosition: (id, data) => api.put(`/positions/${id}`, data),
   

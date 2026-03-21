@@ -262,4 +262,42 @@ class DataService:
         except Exception as e:
             logger.error(f"更新资金流向失败 {code}: {e}")
             return False
-            df = ak
+
+    # ========== 实时行情 ==========
+    
+    async def get_realtime_quote(self, codes: List[str]) -> List[Dict]:
+        """获取实时行情"""
+        try:
+            import akshare as ak
+            df = ak.stock_zh_a_spot_em()
+            if df is None or df.empty:
+                return []
+            
+            # 筛选指定股票
+            codes_set = set(codes)
+            df = df[df['代码'].isin(codes_set)]
+            
+            results = []
+            for _, row in df.iterrows():
+                results.append({
+                    "code": row.get('代码'),
+                    "name": row.get('名称'),
+                    "price": float(row.get('最新价', 0)) if pd.notna(row.get('最新价')) else 0,
+                    "change_pct": float(row.get('涨跌幅', 0)) if pd.notna(row.get('涨跌幅')) else 0,
+                    "volume": float(row.get('成交量', 0)) if pd.notna(row.get('成交量')) else 0,
+                    "amount": float(row.get('成交额', 0)) if pd.notna(row.get('成交额')) else 0,
+                    "high": float(row.get('最高', 0)) if pd.notna(row.get('最高')) else 0,
+                    "low": float(row.get('最低', 0)) if pd.notna(row.get('最低')) else 0,
+                    "open": float(row.get('今开', 0)) if pd.notna(row.get('今开')) else 0,
+                    "prev_close": float(row.get('昨收', 0)) if pd.notna(row.get('昨收')) else 0,
+                    "turnover": float(row.get('换手率', 0)) if pd.notna(row.get('换手率')) else 0,
+                })
+            return results
+        except Exception as e:
+            logger.error(f"获取实时行情失败: {e}")
+            return []
+    
+    async def get_realtime_quote_single(self, code: str) -> Optional[Dict]:
+        """获取单只股票实时行情"""
+        quotes = await self.get_realtime_quote([code])
+        return quotes[0] if quotes else None

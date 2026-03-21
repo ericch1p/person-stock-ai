@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException, Query
 
 from ..database import AsyncSessionLocal
 from ..models import Position, Watchlist, Trade
+from ..services.data_service import DataService
 from ..schemas.position import (
     PositionCreate, PositionUpdate, PositionResponse, PositionListResponse,
     TradeLogCreate, TradeLogResponse, TradeLogListResponse
@@ -214,3 +215,69 @@ async def list_trades(
         trades = result.scalars().all()
         
         return {"total": total, "items": [TradeLogResponse.model_validate(t) for t in trades]}
+
+
+@router.get("/profit")
+async def get_positions_profit():
+    """获取持仓盈亏（含实时行情）"""
+    data_service = DataService()
+    
+    async with AsyncSessionLocal() as session:
+        from sqlalchemy import select
+        from ..models import Position
+        
+        result = await session.execute(
+            select(Position).where(Position.status == 'open')
+        )
+        positions = result.scalars().all()
+        
+        if not positions:
+            return {"positions": [], "total_profit": 0, "total_profit_pct": 0}
+        
+        # 获取所有持仓股票代码
+        codes = [p.code for p in positions]
+        
+        # 获取实时行情
+        quotes = await data_service.get_realtime_quote(codes)
+        quotes_dict = {q["code"]: q for q in quotes}
+        
+        # 计算盈亏
+        total_cost = 0
+        total_value = 0
+        position_profits = []
+        
+        for pos in positions:
+            quote = quotes_dict.get(pos.code, {})
+            current_price = quote.get("price", pos.current_price or pos.buy_price)
+            current_change = quote.get("change_pct", 0)
+            
+            cost = pos.buy_price * pos.quantity
+            value = current_price * pos.quantity
+            profit = value - cost
+            profit_pct = (profit / cost * 100) if cost > 0 else 0
+            
+            total_cost += cost
+            total_value += value
+            
+            position_profits.append({
+                "id": pos.id,
+                "code": pos.code,
+                "name": pos.name,
+                "quantity": pos.quantity,
+                "buy_price": pos.buy_price,
+                "buy_date": pos.buy_date.isoformat() if pos.buy_date else None,
+                "current_price": current_price,
+                "current_change": current_change,
+                "cost": cost,
+                "value": value,
+                "profit": profit,
+                "profit_pct": profit_pct,
+            })
+        
+        return {
+            "positions": position_profits,
+            "total_cost": total_cost,
+            "total_value": total_value,
+            "total_profit": total_value - total_cost,
+            "total_profit_pct": ((total_value - total_cost) / total_cost * 100) if total_cost > 0 else 0
+        }
