@@ -4,43 +4,114 @@
       <template #header>
         <div class="card-header">
           <span>自选股池</span>
-          <el-button type="primary" @click="refresh">
-            <el-icon><Refresh /></el-icon>
-            刷新
-          </el-button>
+          <div>
+            <el-tag v-if="marketSummary" :class="marketSummary.change >= 0 ? 'up' : 'down'">
+              {{ marketSummary.change >= 0 ? '↑' : '↓' }} {{ Math.abs(marketSummary.change).toFixed(2) }}%
+            </el-tag>
+            <el-button type="info" @click="refreshQuotes" :loading="refreshing" size="small" style="margin-left: 10px">
+              <el-icon><Refresh /></el-icon>
+            </el-button>
+            <el-switch v-model="autoRefresh" active-text="自动" @change="toggleAutoRefresh" style="margin-left: 10px" />
+          </div>
         </div>
       </template>
       
-      <el-table :data="watchlist" stripe v-loading="loading">
-        <el-table-column prop="code" label="代码" width="100" />
-        <el-table-column prop="name" label="名称" width="120" />
-        <el-table-column prop="status" label="状态" width="100">
+      <el-table :data="watchlistWithQuote" stripe v-loading="loading">
+        <el-table-column prop="code" label="代码" width="100">
           <template #default="{ row }">
-            <el-tag :type="statusType(row.status)">{{ statusText(row.status) }}</el-tag>
+            <router-link :to="`/stock/${row.code}?name=${encodeURIComponent(row.name)}`" class="stock-link">
+              {{ row.code }}
+            </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="select_date" label="选入日期" width="120" />
-        <el-table-column prop="notes" label="备注" min-width="200" show-overflow-tooltip />
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column prop="name" label="名称" width="100">
           <template #default="{ row }">
-            <el-button size="small" @click="toPosition(row)">买入</el-button>
-            <el-button size="small" type="danger" @click="remove(row)">删除</el-button>
+            <router-link :to="`/stock/${row.code}?name=${encodeURIComponent(row.name)}`" class="stock-link">
+              {{ row.name }}
+            </router-link>
+          </template>
+        </el-table-column>
+        <el-table-column label="现价" width="100" align="right">
+          <template #default="{ row }">
+            <span :class="row.change_pct >= 0 ? 'up' : 'down'" class="price">
+              {{ row.price?.toFixed(2) || '-' }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="涨跌幅" width="100" align="right">
+          <template #default="{ row }">
+            <span :class="row.change_pct >= 0 ? 'up' : 'down'" class="change">
+              {{ row.change_pct >= 0 ? '+' : '' }}{{ row.change_pct?.toFixed(2) || 0 }}%
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="涨跌额" width="100" align="right">
+          <template #default="{ row }">
+            <span :class="row.change >= 0 ? 'up' : 'down'">
+              {{ row.change >= 0 ? '+' : '' }}{{ row.change?.toFixed(2) || 0 }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="成交量" width="100" align="right">
+          <template #default="{ row }">
+            {{ formatVolume(row.volume) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="换手率" width="80" align="right">
+          <template #default="{ row }">
+            {{ row.turnover?.toFixed(1) || '-' }}%
+          </template>
+        </el-table-column>
+        <el-table-column prop="status" label="状态" width="80">
+          <template #default="{ row }">
+            <el-tag :type="statusType(row.status)" size="small">{{ statusText(row.status) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="select_date" label="关注日期" width="110" />
+        <el-table-column label="操作" width="160" fixed="right">
+          <template #default="{ row }">
+            <el-button size="small" type="primary" @click="toKline(row)">K线</el-button>
+            <el-button size="small" type="success" @click="toBuy(row)">买入</el-button>
           </template>
         </el-table-column>
       </el-table>
+      
+      <div class="refresh-info" v-if="lastRefresh">
+        最后刷新: {{ lastRefresh }}
+      </div>
     </el-card>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import api from '@/api'
 
 const router = useRouter()
 const loading = ref(false)
+const refreshing = ref(false)
 const watchlist = ref([])
+const quotes = ref({})
+const lastRefresh = ref('')
+const autoRefresh = ref(true)
+let refreshTimer = null
+const refreshSeconds = 30
+
+const watchlistWithQuote = computed(() => {
+  return watchlist.value.map(item => ({
+    ...item,
+    ...quotes.value[item.code]
+  }))
+})
+
+const marketSummary = computed(() => {
+  const prices = Object.values(quotes.value)
+  if (prices.length === 0) return null
+  const avgChange = prices.reduce((sum, q) => sum + (q.change_pct || 0), 0) / prices.length
+  return { change: avgChange }
+})
 
 const statusType = (status) => {
   const types = { watch: 'info', hold: 'success', sell: 'warning', abandon: 'danger' }
@@ -52,29 +123,89 @@ const statusText = (status) => {
   return texts[status] || status
 }
 
-const loadData = async () => {
+const formatVolume = (vol) => {
+  if (!vol) return '-'
+  if (vol >= 100000000) return (vol / 100000000).toFixed(2) + '亿'
+  if (vol >= 10000) return (vol / 10000).toFixed(0) + '万'
+  return vol.toFixed(0)
+}
+
+const loadWatchlist = async () => {
   loading.value = true
   try {
     const res = await api.getWatchlist()
     watchlist.value = res.items || []
   } catch (error) {
-    ElMessage.error('加载失败')
+    ElMessage.error('加载自选股失败')
   } finally {
     loading.value = false
   }
 }
 
-const refresh = () => loadData()
+const loadQuotes = async () => {
+  if (watchlist.value.length === 0) return
+  
+  refreshing.value = true
+  try {
+    const codes = watchlist.value.map(w => w.code)
+    const res = await api.getRealtimeQuote(codes)
+    
+    const quotesDict = {}
+    res.forEach(q => {
+      quotesDict[q.code] = q
+    })
+    quotes.value = quotesDict
+    lastRefresh.value = new Date().toLocaleTimeString()
+  } catch (error) {
+    console.error('获取行情失败:', error)
+  } finally {
+    refreshing.value = false
+  }
+}
 
-const toPosition = (stock) => {
+const refreshQuotes = () => loadQuotes()
+
+const toggleAutoRefresh = () => {
+  if (autoRefresh.value) {
+    startAutoRefresh()
+  } else {
+    stopAutoRefresh()
+  }
+}
+
+const startAutoRefresh = () => {
+  stopAutoRefresh()
+  if (autoRefresh.value) {
+    refreshTimer = setInterval(() => {
+      loadQuotes()
+    }, refreshSeconds * 1000)
+  }
+}
+
+const stopAutoRefresh = () => {
+  if (refreshTimer) {
+    clearInterval(refreshTimer)
+    refreshTimer = null
+  }
+}
+
+const toKline = (stock) => {
+  router.push(`/stock/${stock.code}?name=${encodeURIComponent(stock.name)}`)
+}
+
+const toBuy = (stock) => {
   router.push({ path: '/positions', query: { code: stock.code, name: stock.name } })
 }
 
-const remove = async (stock) => {
-  ElMessage.info('删除功能待实现')
-}
+onMounted(async () => {
+  await loadWatchlist()
+  await loadQuotes()
+  startAutoRefresh()
+})
 
-onMounted(loadData)
+onUnmounted(() => {
+  stopAutoRefresh()
+})
 </script>
 
 <style scoped>
@@ -82,5 +213,31 @@ onMounted(loadData)
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.stock-link {
+  color: #409eff;
+  text-decoration: none;
+}
+.stock-link:hover {
+  text-decoration: underline;
+}
+.price {
+  font-weight: bold;
+  font-size: 15px;
+}
+.change {
+  font-weight: bold;
+}
+.up {
+  color: #ef5350;
+}
+.down {
+  color: #26a69a;
+}
+.refresh-info {
+  margin-top: 10px;
+  text-align: right;
+  font-size: 12px;
+  color: #909399;
 }
 </style>

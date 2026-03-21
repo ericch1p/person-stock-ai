@@ -55,5 +55,5 @@ export default {
   // 推送
   getPushConfigs: (params) => api.get('/push/configs', { params }),
   createPushConfig: (data) => api.post('/push/configs', data),
-  updatePushConfig: (id, data) => api.put(`/push/configs/${id}`, data),
+  updatePushConfig: (id, data) => api.put(`/push/configs/${id}`, data)
 }
