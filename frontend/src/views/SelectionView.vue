@@ -182,8 +182,24 @@ const showKline = (stock) => {
 
 <style lang="scss" scoped>
 .selection-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  
   .criteria-card {
-    margin-bottom: 20px;
+    flex-shrink: 0;
+    margin-bottom: 16px;
+  }
+  
+  .result-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    
+    :deep(.el-table) {
+      flex: 1;
+    }
   }
   
   .card-header {

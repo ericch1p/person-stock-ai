@@ -98,6 +98,10 @@ const refreshData = async () => {
 <style lang="scss" scoped>
 .app-container {
   height: 100vh;
+  
+  > .el-container {
+    height: 100%;
+  }
 }
 
 .sidebar {
@@ -153,5 +157,11 @@ const refreshData = async () => {
 .main-content {
   background: #f5f7fa;
   padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+  
+  > * {
+    flex-shrink: 0;
+  }
 }
 </style>
