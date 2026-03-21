@@ -64,3 +64,9 @@ async def update_all_stocks():
     """更新所有股票列表"""
     count = await data_service.update_stock_list()
     return {"success": True, "count": count}
+
+
+@router.post("/realtime")
+async def get_realtime_quotes(codes: list[str]):
+    """批量获取实时行情"""
+    return await data_service.get_realtime_quote(codes)

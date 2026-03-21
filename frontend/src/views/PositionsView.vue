@@ -39,8 +39,10 @@
           <div>
             <el-button type="info" @click="refreshProfit" :loading="refreshing">
               <el-icon><Refresh /></el-icon>
-              刷新行情
+              刷新
             </el-button>
+            <el-switch v-model="autoRefresh" active-text="自动刷新" inactive-text="" @change="toggleAutoRefresh" style="margin-left: 10px" />
+            <span v-if="autoRefresh" class="refresh-hint">每{{ refreshSeconds }}秒</span>
             <el-button type="primary" @click="showAddDialog">
               <el-icon><Plus /></el-icon>
               记录买入
@@ -177,7 +179,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRoute } from 'vue-router'
 import api from '@/api'
@@ -187,6 +189,9 @@ const loading = ref(false)
 const refreshing = ref(false)
 const positions = ref([])
 const profitData = ref({})
+const autoRefresh = ref(true)
+const refreshSeconds = ref(30)
+let refreshTimer = null
 const addDialogVisible = ref(false)
 const sellDialogVisible = ref(false)
 
@@ -273,7 +278,38 @@ const submitSell = async () => {
   }
 }
 
-onMounted(loadData)
+onMounted(() => {
+  loadData()
+  startAutoRefresh()
+})
+
+onUnmounted(() => {
+  stopAutoRefresh()
+})
+
+const startAutoRefresh = () => {
+  stopAutoRefresh()
+  if (autoRefresh.value) {
+    refreshTimer = setInterval(() => {
+      refreshProfit()
+    }, refreshSeconds.value * 1000)
+  }
+}
+
+const stopAutoRefresh = () => {
+  if (refreshTimer) {
+    clearInterval(refreshTimer)
+    refreshTimer = null
+  }
+}
+
+const toggleAutoRefresh = () => {
+  if (autoRefresh.value) {
+    startAutoRefresh()
+  } else {
+    stopAutoRefresh()
+  }
+}
 </script>
 
 <style scoped>
@@ -300,4 +336,9 @@ onMounted(loadData)
 .mb-20 { margin-bottom: 20px; }
 .up { color: #ef5350; }
 .down { color: #26a69a; }
+.refresh-hint {
+  font-size: 12px;
+  color: #909399;
+  margin-left: 5px;
+}
 </style>

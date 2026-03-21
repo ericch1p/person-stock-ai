@@ -175,7 +175,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import api from '@/api'
@@ -188,6 +188,7 @@ const loading = ref(false)
 const stockInfo = ref(null)
 const klineData = ref([])
 const financialData = ref(null)
+const realtimeQuote = ref(null)
 const indicators = ref({
   macd: {},
   kdj: {},
@@ -261,6 +262,9 @@ const loadStockInfo = async () => {
     }))
     financialData.value = financial
     
+    // 获取实时行情
+    await loadRealtimeQuote()
+    
     // 计算技术指标
     calculateIndicators()
     
@@ -275,6 +279,38 @@ const loadStockInfo = async () => {
     loading.value = false
   }
 }
+
+const loadRealtimeQuote = async () => {
+  try {
+    const quotes = await api.getRealtimeQuote([route.params.code])
+    if (quotes && quotes.length > 0) {
+      realtimeQuote.value = quotes[0]
+    }
+  } catch (e) {
+    console.error('获取实时行情失败:', e)
+  }
+}
+
+let refreshTimer = null
+const refreshSeconds = 15
+
+const startAutoRefresh = () => {
+  stopAutoRefresh()
+  refreshTimer = setInterval(() => {
+    loadRealtimeQuote()
+  }, refreshSeconds * 1000)
+}
+
+const stopAutoRefresh = () => {
+  if (refreshTimer) {
+    clearInterval(refreshTimer)
+    refreshTimer = null
+  }
+}
+
+onUnmounted(() => {
+  stopAutoRefresh()
+})
 
 const calculateIndicators = () => {
   if (klineData.value.length < 20) return
@@ -411,6 +447,11 @@ const confirmBuy = async () => {
 
 onMounted(() => {
   loadStockInfo()
+  startAutoRefresh()
+})
+
+onUnmounted(() => {
+  stopAutoRefresh()
 })
 
 watch(() => route.params.code, () => {

@@ -21,6 +21,9 @@ export default {
   getKline: (code, params) => api.get(`/stocks/${code}/kline`, { params }),
   updateStocks: () => api.post('/stocks/update-all'),
   
+  // 实时行情
+  getRealtimeQuote: (codes) => api.post('/stocks/realtime', { codes }),
+  
   // 选股
   runSelection: (criteria) => api.post('/selection/run', criteria),
   getSelectionStrategies: () => api.get('/selection/strategies'),
