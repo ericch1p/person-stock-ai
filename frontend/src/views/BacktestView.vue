@@ -5,14 +5,14 @@
         <span>策略回测</span>
       </template>
       
-      <el-form :model="form" label-width="120px">
-        <el-form-item label="选择策略">
-          <el-select v-model="form.strategy_id" placeholder="请选择策略">
+      <el-form :model="form" inline>
+        <el-form-item label="策略">
+          <el-select v-model="form.strategy_id" placeholder="请选择" style="width: 200px">
             <el-option v-for="s in strategies" :key="s.id" :label="s.name" :value="s.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="回测区间">
-          <el-date-picker v-model="form.dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" format="YYYY-MM-DD" value-format="YYYY-MM-DD" />
+          <el-date-picker v-model="form.dateRange" type="daterange" range-separator="至" start-placeholder="开始" end-placeholder="结束" format="YYYY-MM-DD" value-format="YYYY-MM-DD" style="width: 260px" />
         </el-form-item>
         <el-form-item label="初始资金">
           <el-input-number v-model="form.initial_capital" :min="10000" :step="10000" />
@@ -23,40 +23,68 @@
       </el-form>
     </el-card>
     
-    <el-card v-if="result" class="result-card">
-      <template #header>
-        <span>回测结果</span>
-      </template>
+    <template v-if="result">
+      <el-card class="mt-20">
+        <template #header>
+          <span>收益概览</span>
+        </template>
+        <StatsCard :stats="overviewStats" :span="6" />
+      </el-card>
       
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <el-statistic title="总收益率" :value="result.total_return" suffix="%">
-            <template #prefix>
-              <span :class="result.total_return >= 0 ? 'up' : 'down'">
-                {{ result.total_return >= 0 ? '↑' : '↓' }}
+      <el-card class="mt-20">
+        <template #header>
+          <span>收益曲线</span>
+        </template>
+        <EquityCurve :data="equityData" :benchmark="benchmarkData" title="累计收益对比" />
+      </el-card>
+      
+      <el-card class="mt-20">
+        <template #header>
+          <span>交易明细</span>
+        </template>
+        <el-table :data="result.details || []" stripe>
+          <el-table-column prop="code" label="股票" width="100" />
+          <el-table-column prop="name" label="名称" width="100" />
+          <el-table-column prop="return_rate" label="收益率" width="100">
+            <template #default="{ row }">
+              <span :class="row.return_rate >= 0 ? 'up' : 'down'">
+                {{ row.return_rate >= 0 ? '+' : '' }}{{ row.return_rate?.toFixed(2) }}%
               </span>
             </template>
-          </el-statistic>
-        </el-col>
-        <el-col :span="6">
-          <el-statistic title="最大回撤" :value="result.max_drawdown" suffix="%" />
-        </el-col>
-        <el-col :span="6">
-          <el-statistic title="夏普比率" :value="result.sharpe?.toFixed(2) || 0" />
-        </el-col>
-        <el-col :span="6">
-          <el-statistic title="胜率" :value="result.win_rate" suffix="%" />
-        </el-col>
-      </el-row>
-      
-      <el-divider />
-      
-      <el-table :data="result.details || []" stripe>
-        <el-table-column prop="code" label="股票代码" width="100" />
-        <el-table-column prop="return_rate" label="收益率" width="100">
+          </el-table-column>
+          <el-table-column prop="max_drawdown" label="最大回撤" width="100">
+            <template #default="{ row }">
+              {{ row.max_drawdown?.toFixed(2) }}%
+            </template>
+          </el-table-column>
+          <el-table-column prop="win_rate" label="胜率" width="100">
+            <template #default="{ row }">
+              {{ row.win_rate?.toFixed(1) }}%
+            </template>
+          </el-table-column>
+          <el-table-column prop="total_trades" label="交易次数" width="100" />
+          <el-table-column prop="sharpe" label="夏普比率" width="100">
+            <template #default="{ row }">
+              {{ row.sharpe?.toFixed(2) || '-' }}
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
+    </template>
+    
+    <el-card class="mt-20">
+      <template #header>
+        <span>历史回测</span>
+      </template>
+      <el-table :data="history" stripe v-loading="loading">
+        <el-table-column prop="created_at" label="时间" width="160" />
+        <el-table-column prop="strategy_id" label="策略ID" width="80" />
+        <el-table-column prop="start_date" label="开始" width="110" />
+        <el-table-column prop="end_date" label="结束" width="110" />
+        <el-table-column prop="total_return" label="收益率" width="100">
           <template #default="{ row }">
-            <span :class="row.return_rate >= 0 ? 'up' : 'down'">
-              {{ row.return_rate >= 0 ? '+' : '' }}{{ row.return_rate?.toFixed(2) }}%
+            <span :class="row.total_return >= 0 ? 'up' : 'down'">
+              {{ row.total_return >= 0 ? '+' : '' }}{{ row.total_return?.toFixed(2) }}%
             </span>
           </template>
         </el-table-column>
@@ -65,35 +93,14 @@
             {{ row.max_drawdown?.toFixed(2) }}%
           </template>
         </el-table-column>
-        <el-table-column prop="total_trades" label="交易次数" width="100" />
-        <el-table-column prop="win_rate" label="胜率" width="100">
+        <el-table-column prop="win_rate" label="胜率" width="80">
           <template #default="{ row }">
             {{ row.win_rate?.toFixed(1) }}%
           </template>
         </el-table-column>
-      </el-table>
-    </el-card>
-    
-    <el-card class="history-card">
-      <template #header>
-        <span>历史回测记录</span>
-      </template>
-      
-      <el-table :data="history" stripe v-loading="loading">
-        <el-table-column prop="created_at" label="回测时间" width="180" />
-        <el-table-column prop="strategy_id" label="策略ID" width="100" />
-        <el-table-column prop="start_date" label="开始日期" width="120" />
-        <el-table-column prop="end_date" label="结束日期" width="120" />
-        <el-table-column prop="total_return" label="收益率" width="100">
+        <el-table-column prop="sharpe" label="夏普" width="80">
           <template #default="{ row }">
-            <span :class="row.total_return >= 0 ? 'up' : 'down'">
-              {{ row.total_return >= 0 ? '+' : '' }}{{ row.total_return?.toFixed(2) }}%
-            </span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="win_rate" label="胜率" width="100">
-          <template #default="{ row }">
-            {{ row.win_rate?.toFixed(1) }}%
+            {{ row.sharpe?.toFixed(2) || '-' }}
           </template>
         </el-table-column>
       </el-table>
@@ -102,9 +109,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import api from '@/api'
+import StatsCard from '@/components/StatsCard.vue'
+import EquityCurve from '@/components/EquityCurve.vue'
 
 const loading = ref(false)
 const strategies = ref([])
@@ -115,6 +124,33 @@ const form = reactive({
   strategy_id: null,
   dateRange: [],
   initial_capital: 100000
+})
+
+const overviewStats = computed(() => {
+  if (!result.value) return []
+  const r = result.value
+  return [
+    { label: '总收益率', value: r.total_return?.toFixed(2) || 0, suffix: '%', type: r.total_return >= 0 ? 'profit' : 'loss', compare: r.excess_return },
+    { label: '超额收益', value: r.excess_return?.toFixed(2) || 0, suffix: '%', type: r.excess_return >= 0 ? 'profit' : 'loss' },
+    { label: '最大回撤', value: r.max_drawdown?.toFixed(2) || 0, suffix: '%', type: 'loss' },
+    { label: '夏普比率', value: r.sharpe?.toFixed(2) || '0.00', type: 'neutral' }
+  ]
+})
+
+const equityData = computed(() => {
+  // 模拟收益曲线数据
+  if (!result.value?.details?.length) return []
+  const details = result.value.details
+  return details.map((d, i) => ({
+    date: d.code || `Stock ${i + 1}`,
+    value: 1 + (d.return_rate || 0) / 100
+  }))
+})
+
+const benchmarkData = computed(() => {
+  if (!equityData.value.length) return []
+  // 基准为0收益
+  return equityData.value.map(d => ({ date: d.date, value: 1 }))
 })
 
 const loadStrategies = async () => {
@@ -132,7 +168,6 @@ const runBacktest = async () => {
     ElMessage.warning('请选择策略')
     return
   }
-  
   loading.value = true
   try {
     const res = await api.runBacktest({
@@ -143,7 +178,8 @@ const runBacktest = async () => {
     })
     result.value = res
     ElMessage.success('回测完成')
-  } catch (error) {
+    loadHistory()
+  } catch (e) {
     ElMessage.error('回测失败')
   } finally {
     loading.value = false
@@ -153,8 +189,6 @@ const runBacktest = async () => {
 onMounted(() => {
   loadStrategies()
   loadHistory()
-  
-  // 默认回测区间
   const end = new Date()
   const start = new Date()
   start.setFullYear(start.getFullYear() - 1)
@@ -163,9 +197,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.result-card, .history-card {
-  margin-top: 20px;
-}
-.up { color: #f56c6c; }
-.down { color: #67c23a; }
+.mt-20 { margin-top: 20px; }
+.up { color: #ef5350; }
+.down { color: #26a69a; }
 </style>

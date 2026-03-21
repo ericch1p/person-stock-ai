@@ -119,8 +119,11 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import api from '@/api'
+
+const router = useRouter()
 
 const loading = ref(false)
 const results = ref([])
@@ -173,7 +176,7 @@ const addToWatch = async (stock) => {
 }
 
 const showKline = (stock) => {
-  ElMessage.info(`查看 ${stock.name}(${stock.code}) 的K线`)
+  router.push(`/stock/${stock.code}?name=${encodeURIComponent(stock.name)}`)
 }
 </script>
 
