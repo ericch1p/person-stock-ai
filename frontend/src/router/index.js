@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
-  { path: '/', redirect: '/selection' },
+  { path: '/', redirect: '/dashboard' },
+  { path: '/dashboard', name: 'Dashboard', component: () => import('@/views/DashboardView.vue') },
   { path: '/selection', name: 'Selection', component: () => import('@/views/SelectionView.vue') },
   { path: '/watchlist', name: 'Watchlist', component: () => import('@/views/WatchlistView.vue') },
   { path: '/positions', name: 'Positions', component: () => import('@/views/PositionsView.vue') },

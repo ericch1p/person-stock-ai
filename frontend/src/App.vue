@@ -12,6 +12,10 @@
             router
             class="sidebar-menu"
           >
+            <el-menu-item index="/dashboard">
+              <el-icon><DataLine /></el-icon>
+              <span>主页</span>
+            </el-menu-item>
             <el-menu-item index="/selection">
               <el-icon><Search /></el-icon>
               <span>选股</span>

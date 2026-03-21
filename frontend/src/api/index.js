@@ -38,6 +38,8 @@ export default {
   // 回测
   runBacktest: (data) => api.post('/backtest/run', data),
   getBacktestResults: (params) => api.get('/backtest/results', { params }),
+  saveBacktestResult: (data) => api.post('/backtest/results', data),
+  deleteBacktestResult: (id) => api.delete(`/backtest/results/${id}`),
   
   // 持仓
   getPositions: (params) => api.get('/positions/', { params }),
