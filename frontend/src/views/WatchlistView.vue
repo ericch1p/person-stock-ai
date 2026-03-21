@@ -4,6 +4,10 @@
       <template #header>
         <div class="card-header">
           <span>自选股池</span>
+          <el-button type="primary" @click="showAddDialog = true" size="small">
+            <el-icon><Plus /></el-icon>
+            添加
+          </el-button>
           <div>
             <el-tag v-if="marketSummary" :class="marketSummary.change >= 0 ? 'up' : 'down'">
               {{ marketSummary.change >= 0 ? '↑' : '↓' }} {{ Math.abs(marketSummary.change).toFixed(2) }}%
@@ -80,6 +84,22 @@
         最后刷新: {{ lastRefresh }}
       </div>
     </el-card>
+
+    <!-- 添加自选股对话框 -->
+    <el-dialog v-model="showAddDialog" title="添加自选股" width="400px">
+      <el-form :model="addForm" label-width="80px">
+        <el-form-item label="股票代码">
+          <el-input v-model="addForm.code" placeholder="如: 600519" />
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="addForm.notes" type="textarea" placeholder="选填" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="showAddDialog = false">取消</el-button>
+        <el-button type="primary" @click="addToWatchlist">确定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -87,6 +107,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
+import { Plus } from '@element-plus/icons-vue'
 import api from '@/api'
 
 const router = useRouter()
@@ -94,6 +115,8 @@ const loading = ref(false)
 const refreshing = ref(false)
 const watchlist = ref([])
 const quotes = ref({})
+const showAddDialog = ref(false)
+const addForm = ref({ code: '', notes: '' })
 const lastRefresh = ref('')
 const autoRefresh = ref(true)
 let refreshTimer = null
@@ -164,6 +187,29 @@ const loadQuotes = async () => {
 }
 
 const refreshQuotes = () => loadQuotes()
+
+const addToWatchlist = async () => {
+  if (!addForm.value.code) {
+    ElMessage.warning('请输入股票代码')
+    return
+  }
+  
+  try {
+    const code = addForm.value.code.replace(/\s/g, '')
+    await api.addToWatchlist({
+      code: code,
+      name: code,  // 后端会根据代码获取名称
+      notes: addForm.value.notes
+    })
+    ElMessage.success('添加成功')
+    showAddDialog.value = false
+    addForm.value = { code: '', notes: '' }
+    await loadWatchlist()
+    await loadQuotes()
+  } catch (error) {
+    ElMessage.error('添加失败')
+  }
+}
 
 const toggleAutoRefresh = () => {
   if (autoRefresh.value) {

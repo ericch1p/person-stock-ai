@@ -89,6 +89,15 @@ cd backend && python -m uvicorn app.main:app --port 8000 &
 cd frontend && npm run dev &
 ```
 
+### ⚠️ 重启后必须自检
+完成服务重启后，**必须自行验证**以下内容后再通知用户：
+1. 后端健康检查: `curl http://localhost:8000/health`
+2. 前端可访问: `curl http://localhost:5173`
+3. 局域网可访问: `curl http://192.168.0.102:5173`
+4. 如有需要，用浏览器实际访问确认页面正常渲染
+
+确认全部通过后再通知用户"服务已启动"。
+
 ---
 
 ## Git 工作流
