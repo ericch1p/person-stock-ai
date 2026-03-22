@@ -4,10 +4,15 @@
       <template #header>
         <div class="card-header">
           <span>自选股池</span>
-          <el-button type="primary" @click="showAddDialog = true" size="small">
-            <el-icon><Plus /></el-icon>
-            添加
-          </el-button>
+          <div>
+            <el-button type="warning" @click="syncData" :loading="syncing" size="small">
+              <el-icon><Refresh /></el-icon>
+              同步数据
+            </el-button>
+            <el-button type="primary" @click="showAddDialog = true" size="small">
+              <el-icon><Plus /></el-icon>
+              添加
+            </el-button>
           <div>
             <el-tag v-if="marketSummary" :class="marketSummary.change >= 0 ? 'up' : 'down'">
               {{ marketSummary.change >= 0 ? '↑' : '↓' }} {{ Math.abs(marketSummary.change).toFixed(2) }}%
@@ -113,6 +118,7 @@ import api from '@/api'
 const router = useRouter()
 const loading = ref(false)
 const refreshing = ref(false)
+const syncing = ref(false)
 const watchlist = ref([])
 const quotes = ref({})
 const showAddDialog = ref(false)
@@ -187,6 +193,25 @@ const loadQuotes = async () => {
 }
 
 const refreshQuotes = () => loadQuotes()
+
+const syncData = async () => {
+  syncing.value = true
+  try {
+    ElMessage.info('开始同步数据，请稍候...')
+    const res = await api.post('/watchlist/sync')
+    if (res.success) {
+      ElMessage.success(`同步完成: 成功${res.success}个，失败${res.failed}个`)
+      await loadWatchlist()
+      await loadQuotes()
+    } else {
+      ElMessage.error(res.message || '同步失败')
+    }
+  } catch (error) {
+    ElMessage.error('同步失败')
+  } finally {
+    syncing.value = false
+  }
+}
 
 const addToWatchlist = async () => {
   if (!addForm.value.code) {

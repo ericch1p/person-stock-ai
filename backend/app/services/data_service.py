@@ -1,12 +1,23 @@
 """
 数据服务 - 负责数据获取、存储和管理
 """
-from datetime import date, timedelta
+import os
+# 禁用代理以确保akshare可以正常访问
+os.environ.pop('http_proxy', None)
+os.environ.pop('https_proxy', None)
+os.environ.pop('HTTP_PROXY', None)
+os.environ.pop('HTTPS_PROXY', None)
+os.environ.pop('ALL_PROXY', None)
+os.environ.pop('all_proxy', None)
+
+from datetime import date, timedelta, datetime
 from typing import Optional, List, Dict, Any
 import pandas as pd
+from loguru import logger
 
 from ..database import AsyncSessionLocal
 from ..models import Stock, DailyKline, Financial, MoneyFlow
+from ..schemas.watchlist import WatchlistItem
 
 
 class DataService:
@@ -18,6 +29,22 @@ class DataService:
     async def _get_akshare(self):
         """延迟获取 akshare"""
         if self.akshare is None:
+            # 检查代理是否可用（通过实际HTTP请求测试）
+            proxy_url = os.environ.get('http_proxy', '')
+            if proxy_url:
+                try:
+                    import urllib.request
+                    proxy_handler = urllib.request.ProxyHandler({'http': proxy_url, 'https': proxy_url})
+                    opener = urllib.request.build_opener(proxy_handler)
+                    # 测试代理连通性（使用百度）
+                    opener.open('http://www.baidu.com', timeout=3)
+                    logger.info("代理可用，继续使用代理")
+                except Exception as e:
+                    logger.warning(f"代理不可用({e})，清除代理设置")
+                    for key in list(os.environ.keys()):
+                        if 'proxy' in key.lower():
+                            os.environ.pop(key, None)
+            
             import akshare as ak
             self.akshare = ak
         return self.akshare
@@ -90,9 +117,53 @@ class DataService:
     
     # ========== K线数据 ==========
     
+    async def _fetch_kline_from_sina(self, code: str, limit: int = 365) -> Optional[List[Dict]]:
+        """从新浪财经获取K线数据"""
+        try:
+            import requests
+            session = requests.Session()
+            session.headers.update({
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+            })
+            
+            # 确定市场前缀
+            if code.startswith('6'):
+                symbol = f'sh{code}'
+            else:
+                symbol = f'sz{code}'
+            
+            url = 'https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData'
+            params = {'symbol': symbol, 'scale': '240', 'datalen': str(limit)}
+            
+            r = session.get(url, params=params, timeout=10)
+            if r.status_code != 200:
+                return None
+            
+            import json
+            data = json.loads(r.text)
+            if not data:
+                return None
+            
+            # 转换格式
+            klines = []
+            for item in data:
+                klines.append({
+                    'date': item['day'],
+                    'open': float(item['open']),
+                    'high': float(item['high']),
+                    'low': float(item['low']),
+                    'close': float(item['close']),
+                    'volume': float(item['volume']),
+                })
+            return klines
+        except Exception as e:
+            logger.error(f"新浪K线获取失败 {code}: {e}")
+            return None
+    
     async def update_daily_kline(self, code: str, start_date: date = None, 
                                   end_date: date = None) -> bool:
         """更新日线数据"""
+        # 优先使用akshare，失败则使用新浪API
         ak = await self._get_akshare()
         
         if start_date is None:
@@ -100,6 +171,9 @@ class DataService:
         if end_date is None:
             end_date = date.today()
         
+        kline_data = None
+        
+        # 尝试akshare
         try:
             df = ak.stock_zh_a_hist(
                 symbol=code,
@@ -108,28 +182,66 @@ class DataService:
                 adjust="qfq"
             )
             
-            if df is None or df.empty:
-                return False
-            
+            if df is not None and not df.empty:
+                kline_data = df.to_dict('records')
+                logger.info(f"akshare获取K线 {code}: {len(kline_data)} 条")
+        except Exception as e:
+            logger.warning(f"akshare获取K线失败 {code}: {e}")
+        
+        # 尝试新浪API
+        if kline_data is None:
+            try:
+                kline_data = await self._fetch_kline_from_sina(code, limit=365)
+                if kline_data:
+                    logger.info(f"新浪API获取K线 {code}: {len(kline_data)} 条")
+            except Exception as e:
+                logger.warning(f"新浪API获取K线失败 {code}: {e}")
+        
+        if not kline_data:
+            logger.warning(f"所有K线数据源获取失败 {code}")
+            return False
+        
+        # 保存到数据库
+        try:
             async with AsyncSessionLocal() as session:
-                for _, row in df.iterrows():
-                    kline = DailyKline(
-                        code=code,
-                        date=pd.to_datetime(row['日期']).date(),
-                        open=float(row['开盘']),
-                        high=float(row['最高']),
-                        low=float(row['最低']),
-                        close=float(row['收盘']),
-                        volume=float(row['成交量']),
-                        amount=float(row['成交额']) if '成交额' in row else None,
-                        change_pct=float(row['涨跌幅']) if '涨跌幅' in row else None
-                    )
-                    session.merge(kline)
+                for row in kline_data:
+                    # 处理akshare格式
+                    if '日期' in row:
+                        kline_date = pd.to_datetime(row['日期']).date()
+                        kline = DailyKline(
+                            code=code,
+                            date=kline_date,
+                            open=float(row['开盘']),
+                            high=float(row['最高']),
+                            low=float(row['最低']),
+                            close=float(row['收盘']),
+                            volume=float(row['成交量']),
+                            amount=float(row.get('成交额', 0) or 0),
+                            change_pct=float(row.get('涨跌幅', 0) or 0)
+                        )
+                    # 处理新浪格式
+                    elif 'date' in row:
+                        kline = DailyKline(
+                            code=code,
+                            date=date.fromisoformat(row['date']),
+                            open=row['open'],
+                            high=row['high'],
+                            low=row['low'],
+                            close=row['close'],
+                            volume=row['volume'],
+                            amount=0,
+                            change_pct=0
+                        )
+                    else:
+                        continue
+                    
+                    await session.merge(kline)
                 
                 await session.commit()
+                logger.info(f"K线数据已保存 {code}: {len(kline_data)} 条")
                 return True
         except Exception as e:
-            print(f"更新K线失败 {code}: {e}")
+            logger.error(f"保存K线失败 {code}: {e}")
             return False
     
     async def get_kline(self, code: str, start_date: Optional[date] = None,
@@ -301,3 +413,179 @@ class DataService:
         """获取单只股票实时行情"""
         quotes = await self.get_realtime_quote([code])
         return quotes[0] if quotes else None
+    
+    # ========== 自选股管理 ==========
+    
+    async def get_watchlist(self, status: Optional[str] = None, limit: int = 100, offset: int = 0) -> Dict:
+        """获取自选股列表"""
+        from sqlalchemy import select, func
+        from ..models.watchlist import Watchlist
+        
+        async with AsyncSessionLocal() as session:
+            # 构建查询
+            query = select(Watchlist)
+            count_query = select(func.count()).select_from(Watchlist)
+            
+            if status:
+                query = query.where(Watchlist.status == status)
+                count_query = count_query.where(Watchlist.status == status)
+            
+            # 获取总数
+            total_result = await session.execute(count_query)
+            total = total_result.scalar() or 0
+            
+            # 获取列表
+            query = query.order_by(Watchlist.select_date.desc()).offset(offset).limit(limit)
+            result = await session.execute(query)
+            items = result.scalars().all()
+            
+            return {
+                "total": total,
+                "items": [
+                    {
+                        "id": w.id,
+                        "code": w.code,
+                        "name": w.name or w.code,
+                        "status": w.status,
+                        "strategy_id": w.strategy_id,
+                        "select_date": w.select_date if w.select_date else None,
+                        "notes": w.notes,
+                        "tags": w.tags,
+                        "created_at": w.created_at.isoformat() if w.created_at else None
+                    }
+                    for w in items
+                ]
+            }
+    
+    async def add_to_watchlist(self, item: WatchlistItem) -> Dict:
+        """添加自选股"""
+        from sqlalchemy import select
+        from ..models.watchlist import Watchlist
+        
+        async with AsyncSessionLocal() as session:
+            # 检查是否已存在
+            result = await session.execute(
+                select(Watchlist).where(Watchlist.code == item.code)
+            )
+            existing = result.scalar_one_or_none()
+            if existing:
+                return {"success": False, "message": "股票已在自选股池中"}
+            
+            # 获取股票名称（如果未提供）
+            name = item.name or item.code
+            if not item.name:
+                result = await session.execute(
+                    select(Stock).where(Stock.code == item.code)
+                )
+                stock = result.scalar_one_or_none()
+                if stock:
+                    name = stock.name
+            
+            watchlist_item = Watchlist(
+                code=item.code,
+                name=name,
+                status=item.status or "watch",
+                notes=item.notes,
+                tags=item.tags,
+                select_date=date.today().isoformat()
+            )
+            session.add(watchlist_item)
+            await session.commit()
+            await session.refresh(watchlist_item)
+            
+            return {"success": True, "id": watchlist_item.id}
+    
+    async def remove_from_watchlist(self, code: str) -> Dict:
+        """删除自选股"""
+        from sqlalchemy import delete
+        from ..models.watchlist import Watchlist
+        
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(
+                delete(Watchlist).where(Watchlist.code == code)
+            )
+            await session.commit()
+            
+            if result.rowcount > 0:
+                return {"success": True}
+            return {"success": False, "message": "股票不在自选股池中"}
+    
+    async def update_watchlist(self, code: str, item: Dict) -> Dict:
+        """更新自选股"""
+        from sqlalchemy import select, update
+        from ..models.watchlist import Watchlist
+        
+        async with AsyncSessionLocal() as session:
+            # 获取现有记录
+            result = await session.execute(
+                select(Watchlist).where(Watchlist.code == code)
+            )
+            watchlist_item = result.scalar_one_or_none()
+            if not watchlist_item:
+                return {"success": False, "message": "股票不在自选股池中"}
+            
+            if "status" in item:
+                watchlist_item.status = item["status"]
+            if "notes" in item:
+                watchlist_item.notes = item["notes"]
+            if "tags" in item:
+                watchlist_item.tags = item["tags"]
+            
+            await session.commit()
+            return {"success": True}
+    
+    async def sync_watchlist_data(self) -> Dict:
+        """同步自选股数据（K线+实时行情）"""
+        from sqlalchemy import select
+        from ..models.watchlist import Watchlist
+        
+        async with AsyncSessionLocal() as session:
+            # 获取所有自选股
+            result = await session.execute(select(Watchlist))
+            watchlist = result.scalars().all()
+        
+        if not watchlist:
+            return {"success": False, "message": "自选股池为空"}
+        
+        results = {
+            "total": len(watchlist),
+            "success": 0,
+            "failed": 0,
+            "details": []
+        }
+        
+        for stock in watchlist:
+            try:
+                # 更新K线数据
+                kline_result = await self.update_daily_kline(stock.code)
+                
+                # 获取实时行情
+                realtime = await self.get_realtime_quote_single(stock.code)
+                
+                if kline_result:
+                    results["success"] += 1
+                    results["details"].append({
+                        "code": stock.code,
+                        "name": stock.name,
+                        "status": "success",
+                        "price": realtime.get("price") if realtime else None
+                    })
+                else:
+                    results["failed"] += 1
+                    results["details"].append({
+                        "code": stock.code,
+                        "name": stock.name,
+                        "status": "kline_failed",
+                        "price": realtime.get("price") if realtime else None
+                    })
+            except Exception as e:
+                logger.error(f"同步自选股 {stock.code} 失败: {e}")
+                results["failed"] += 1
+                results["details"].append({
+                    "code": stock.code,
+                    "name": stock.name,
+                    "status": "failed",
+                    "error": str(e)
+                })
+        
+        return results

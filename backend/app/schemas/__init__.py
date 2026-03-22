@@ -5,6 +5,7 @@ from .strategy import *
 from .selection import *
 from .backtest import *
 from .position import *
+from .watchlist import *
 from .push import *
 
 __all__ = [
@@ -14,5 +15,6 @@ __all__ = [
     "StrategyBase", "StrategyCreate", "StrategyUpdate", "StrategyResponse",
     "BacktestRequest", "BacktestResponse",
     "PositionBase", "PositionCreate", "PositionUpdate", "PositionResponse",
+    "WatchlistItem", "WatchlistResponse",
     "PushConfigBase", "PushConfigCreate", "PushConfigUpdate",
 ]

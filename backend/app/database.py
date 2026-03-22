@@ -43,5 +43,11 @@ async def get_db():
 
 async def init_db():
     """初始化数据库表"""
+    # 导入所有模型以确保它们被注册到Base.metadata
+    from .models import (
+        Stock, DailyKline, Financial, MoneyFlow, 
+        Watchlist, Position, Trade, Strategy, 
+        BacktestResult, PushConfig
+    )
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

@@ -4,6 +4,7 @@ from .selection import router as selection_router
 from .strategy import router as strategy_router
 from .backtest import router as backtest_router
 from .position import router as position_router
+from .watchlist import router as watchlist_router
 from .push import router as push_router
 
 __all__ = [
@@ -12,5 +13,6 @@ __all__ = [
     "strategy_router",
     "backtest_router",
     "position_router",
+    "watchlist_router",
     "push_router",
 ]

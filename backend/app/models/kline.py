@@ -1,8 +1,9 @@
 """
 日线行情模型
 """
-from sqlalchemy import Column, String, Date, Float, Integer
+from sqlalchemy import Column, String, Date, DateTime, Float, Integer
 from sqlalchemy.sql import func
+from datetime import datetime
 
 from ..database import Base
 
@@ -29,8 +30,8 @@ class DailyKline(Base):
     # 复权标记
     adj_type = Column(String(10), default="qfq", comment="复权类型：qfq前复权 hf后复权 None不复权")
     
-    created_at = Column(Date, server_default=func.now())
-    updated_at = Column(Date, server_default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     __table_args__ = (
         # 联合唯一索引：每个股票每天只有一条K线数据
