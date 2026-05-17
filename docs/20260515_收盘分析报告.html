@@ -114,10 +114,11 @@ body {
 .sec-title {font-size:14px;font-weight:600;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--primary);}
 
 /* 报告头部 */
-.report-hdr {display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;margin-bottom:20px;gap:8px;}
-.report-hdr h1 {font-size:20px;font-weight:700;color:var(--fg);margin:0;}
-.report-hdr h1 span {background:linear-gradient(135deg,var(--primary),#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.report-meta {font-size:13px;color:var(--fg-muted);}
+.report-hdr {margin-bottom:20px;}
+.report-hdr-top {display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.report-hdr-top h1 {font-size:20px;font-weight:700;color:var(--fg);margin:0;}
+.report-hdr-top h1 span {background:linear-gradient(135deg,var(--primary),#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.report-meta {font-size:13px;color:var(--fg-muted);margin-top:8px;}
 .report-meta strong {color:var(--fg);font-weight:600;}
 
 /* 警报卡片 - 左侧彩色边条 */
@@ -252,7 +253,12 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
   <div class="panel-body">
 
 <div class="report-hdr">
+<div class="report-hdr-top">
 <h1>📊 <span>每日收盘综合分析与监控</span></h1>
+<select id="reportDate" class="date-select">
+<option value="20260515" selected>2026-05-15 周五</option>
+</select>
+</div>
 <div class="report-meta">
 2026-05-15（周五） · 
 持仓市值:<strong>¥21025</strong> · 
@@ -343,9 +349,6 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
 <div class="sec-title" style="border-color:var(--primary);">🎯 深度分析标的一览 · <span style="font-weight:400;font-size:13px;color:var(--fg-muted);">18</span></div>
 
 <div class="filter-bar">
-<select id="reportDate" class="date-select">
-<option value="20260515" selected>2026-05-15 周五</option>
-</select>
 <input class="search-box" id="searchInput" placeholder="搜索代码或名称..." oninput="filterTable()">
 <span class="filter-chip active" onclick="setFilter(this,'📌 全量')">📌 全量</span>
 <span class="filter-chip" onclick="setFilter(this,'🔴 持仓')">🔴 持仓</span>
