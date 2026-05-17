@@ -2634,8 +2634,8 @@ function drawKline(code){
     var x=lx+i*xStep, k=kl[i];
     var o=k[1],c=k[4],h=k[2],l=k[3];
     var isUp=c>=o?true:false;
-    ctx.fillStyle=isUp?'rgba(16,185,129,0.8)':'rgba(239,68,68,0.8)';
-    ctx.strokeStyle=isUp?'rgba(16,185,129,0.9)':'rgba(239,68,68,0.9)';
+    ctx.fillStyle=isUp?'rgba(239,68,68,0.8)':'rgba(16,185,129,0.8)';
+    ctx.strokeStyle=isUp?'rgba(239,68,68,0.9)':'rgba(16,185,129,0.9)';
     ctx.lineWidth=Math.max(1,cw*0.3);
     // Wick
     ctx.beginPath(); ctx.moveTo(x+cw/2,yP(h)); ctx.lineTo(x+cw/2,yP(l)); ctx.stroke();
@@ -2657,7 +2657,7 @@ function drawKline(code){
   // Volume
   for(var i=0;i<n;i++){
     var x=lx+i*xStep, k=kl[i];
-    ctx.fillStyle=k[4]>=k[1]?'rgba(16,185,129,0.2)':'rgba(239,68,68,0.2)';
+    ctx.fillStyle=k[4]>=k[1]?'rgba(239,68,68,0.2)':'rgba(16,185,129,0.2)';
     ctx.fillRect(x+(cw-cw*0.6)/2,yV(k[5]),cw*0.6,vt+vh-yV(k[5]));
   }
 }
