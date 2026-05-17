@@ -176,7 +176,13 @@ tr.clickable-row:hover {background:rgba(59,130,246,0.04);}
 .det-risk {font-size:12px;color:var(--danger);line-height:1.4;padding:6px 10px;background:var(--danger-bg);border-radius:var(--radius-sm);}
 .det-act {font-size:12px;font-weight:500;color:var(--success);line-height:1.4;padding:6px 10px;background:var(--success-bg);border-radius:var(--radius-sm);}
 
-/* 六层分析动态生成项 */
+/* 搜索框 + 筛选按钮 */
+.filter-bar {display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.search-box {flex:1;min-width:180px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--surface);color:var(--fg);outline:none;transition:border-color .15s;}
+.search-box:focus {border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-bg);}
+.filter-chip {display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--fg-muted);transition:all .15s;user-select:none;}
+.filter-chip:hover {border-color:var(--primary);color:var(--primary);background:var(--primary-bg);}
+.filter-chip.active {background:var(--primary);color:#fff;border-color:var(--primary);}
 .ly-grid {display:flex;flex-direction:column;gap:6px;}
 .ly-item {padding:6px 8px;border-radius:6px;font-size:12px;line-height:1.5;background:rgba(255,255,255,0.5);border:1px solid var(--border);}
 .ly-key {display:inline-block;padding:1px 6px;border-radius:4px;font-size:11px;font-weight:500;margin-right:6px;background:var(--primary-bg);color:var(--primary);}
@@ -186,16 +192,16 @@ tr.clickable-row:hover {background:rgba(59,130,246,0.04);}
 .det-hd-left {display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .det-rank {font-size:12px;font-weight:600;}
 .det-ind {font-size:11px;color:var(--fg-muted);}
-.det-top-row {display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;}
+.det-top-row {margin-top:8px;}
 .det-right-panel {display:flex;flex-direction:column;gap:10px;}
 .det-bottom-row {margin-top:16px;}
 .det-text {font-size:12px;line-height:1.5;padding:4px 0;color:var(--fg-2);}
 
 /* K线 */
-.kline-box {width:100%;}
+.kline-box {width:100%;margin-bottom:8px;}
 .kline-box .kline-title {font-size:12px;font-weight:600;margin-bottom:6px;color:var(--fg-2);}
 .kline-box .kl-mas {font-weight:400;font-size:11px;color:var(--fg-muted);}
-.kline-canvas {width:100%;border-radius:var(--radius-sm);}
+.kline-canvas {width:100%;border-radius:var(--radius-sm);max-height:240px;}
 
 /* 指标 */
 .mv-k {font-weight:500;color:var(--fg);}
@@ -370,11 +376,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('000001')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-000001" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -430,11 +436,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('399001')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-399001" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -490,11 +496,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('399006')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-399006" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -550,11 +556,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('515180')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-515180" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -610,11 +616,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('002948')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-002948" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -670,11 +676,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('002459')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-002459" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -730,11 +736,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('600578')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-600578" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section" style="grid-column:1/-1;">
                       <div style="background:rgba(37,99,235,0.06);border-radius:var(--radius-sm);padding:8px 10px;font-size:12px;color:var(--primary);line-height:1.5;font-weight:500;">利润+102%弹性最大，但45%涨幅已透支。5买/5持有分歧明显，等回调再介入</div>
@@ -795,11 +801,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('600509')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-600509" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -855,11 +861,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('600256')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-600256" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -915,11 +921,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('000591')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-000591" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section" style="grid-column:1/-1;">
                       <div style="background:rgba(37,99,235,0.06);border-radius:var(--radius-sm);padding:8px 10px;font-size:12px;color:var(--primary);line-height:1.5;font-weight:500;">PE低是"价值陷阱"——应收125亿异常+利润-33%+0买/7不买</div>
@@ -980,11 +986,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('601778')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-601778" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -1040,11 +1046,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('000690')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-000690" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section" style="grid-column:1/-1;">
                       <div style="background:rgba(37,99,235,0.06);border-radius:var(--radius-sm);padding:8px 10px;font-size:12px;color:var(--primary);line-height:1.5;font-weight:500;">PE仅5倍+PB破净0.91+利润暴增45%+负债率40%健康——四方共振的极品价值洼地</div>
@@ -1105,11 +1111,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('600780')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-600780" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section" style="grid-column:1/-1;">
                       <div style="background:rgba(37,99,235,0.06);border-radius:var(--radius-sm);padding:8px 10px;font-size:12px;color:var(--primary);line-height:1.5;font-weight:500;">PB 0.94近破净+ROE 14.5%优秀+PE 6.5合理+负债率30%极低——小而美</div>
@@ -1170,11 +1176,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('002212')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-002212" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -1230,11 +1236,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('600707')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-600707" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -1290,11 +1296,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('002129')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-002129" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -1350,11 +1356,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('601699')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-601699" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -1410,11 +1416,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('601117')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-601117" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -1470,11 +1476,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('601939')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-601939" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -1530,11 +1536,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('601288')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-601288" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -1590,11 +1596,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('601838')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-601838" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
@@ -1650,11 +1656,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('601128')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-601128" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section" style="grid-column:1/-1;">
                       <div style="background:rgba(37,99,235,0.06);border-radius:var(--radius-sm);padding:8px 10px;font-size:12px;color:var(--primary);line-height:1.5;font-weight:500;">PB 0.74破净+ROE 11%+不良率0.74%+股息率4.2%。银行中综合最优</div>
@@ -1715,11 +1721,11 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('601328')">✕ 收起</span>
                 </div>
-                <div class="det-top-row">
-                  <div class="kline-box">
+                <div class="kline-box">
                     <div class="kline-title">📈 120日K线走势 <span class="kl-mas">MA5 <span style="color:#2563eb">─</span> · MA20 <span style="color:#d97706">─</span></span></div>
                     <canvas id="kl-601328" class="kline-canvas"></canvas>
                   </div>
+                <div class="det-top-row">
                   <div class="det-right-panel">
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
