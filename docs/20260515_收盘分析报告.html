@@ -196,6 +196,17 @@ tr.clickable-row:hover {background:rgba(59,130,246,0.04);}
 .date-select {padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--surface);color:var(--fg);outline:none;cursor:pointer;}
 .date-select:focus {border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-bg);}
 .filter-count {font-size:11px;color:var(--fg-muted);padding:2px 8px;background:var(--primary-bg);border-radius:var(--radius-sm);white-space:nowrap;}
+
+/* 涨跌幅迷你表格 */
+.mini-tbl {font-size:12px;}
+.mt-hdr {display:flex;padding:4px 6px;border-radius:var(--radius-sm);background:var(--primary-bg);font-weight:500;color:var(--fg-muted);margin-bottom:2px;}
+.mt-row {display:flex;padding:4px 6px;border-radius:4px;transition:background .1s;}
+.mt-row:hover {background:rgba(255,255,255,0.6);}
+.mt-n {width:20px;flex-shrink:0;color:var(--fg-muted);}
+.mt-c {width:70px;flex-shrink:0;font-family:var(--font-mono);font-size:11px;}
+.mt-m {flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mt-p {width:55px;flex-shrink:0;text-align:right;font-family:var(--font-mono);font-size:11px;}
+.mt-z {width:65px;flex-shrink:0;text-align:right;font-weight:500;}
 .ly-grid {display:flex;flex-direction:column;gap:6px;}
 .ly-item {padding:6px 8px;border-radius:6px;font-size:12px;line-height:1.5;background:rgba(255,255,255,0.5);border:1px solid var(--border);}
 .ly-key {display:inline-block;padding:1px 6px;border-radius:4px;font-size:11px;font-weight:500;margin-right:6px;background:var(--primary-bg);color:var(--primary);}
@@ -297,23 +308,25 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
 <div class="sec-title" style="border-color:var(--primary);">📊 跟踪池涨跌幅 · <span style="font-weight:400;font-size:13px;color:var(--fg-muted);">17</span></div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
 <div>
-<div class="sec-title" style="font-size:12px;border-color:var(--green);margin-bottom:8px;">🔺 涨幅前5</div>
-<div style="font-size:12px;line-height:1.8;">
-1 600578京能电力 ¥7.01 <span style="color:var(--red);">▲+10.05%</span><br>
-2 600256广汇能源 ¥6.40 <span style="color:var(--red);">▲+3.73%</span><br>
-3 000591太阳能 ¥6.01 <span style="color:var(--red);">▲+3.09%</span><br>
-4 601699潞安环能 ¥15.15 <span style="color:var(--red);">▲+2.30%</span><br>
-5 601939建设银行 ¥9.82 <span style="color:var(--red);">▲+0.82%</span>
+<div class="sec-title" style="font-size:12px;border-color:var(--red);margin-bottom:8px;">🔺 涨幅前5</div>
+<div class="mini-tbl">
+<div class="mt-hdr"><span class="mt-n">#</span><span class="mt-c">代码</span><span class="mt-m">名称</span><span class="mt-p">价格</span><span class="mt-z">涨跌幅</span></div>
+<div class="mt-row"><span class="mt-n">1</span><span class="mt-c">600578</span><span class="mt-m">京能电力</span><span class="mt-p">¥7.01</span><span class="mt-z up">▲+10.05%</span></div>
+<div class="mt-row"><span class="mt-n">2</span><span class="mt-c">600256</span><span class="mt-m">广汇能源</span><span class="mt-p">¥6.40</span><span class="mt-z up">▲+3.73%</span></div>
+<div class="mt-row"><span class="mt-n">3</span><span class="mt-c">000591</span><span class="mt-m">太阳能</span><span class="mt-p">¥6.01</span><span class="mt-z up">▲+3.09%</span></div>
+<div class="mt-row"><span class="mt-n">4</span><span class="mt-c">601699</span><span class="mt-m">潞安环能</span><span class="mt-p">¥15.15</span><span class="mt-z up">▲+2.30%</span></div>
+<div class="mt-row"><span class="mt-n">5</span><span class="mt-c">601939</span><span class="mt-m">建设银行</span><span class="mt-p">¥9.82</span><span class="mt-z up">▲+0.82%</span></div>
 </div>
 </div>
 <div>
-<div class="sec-title" style="font-size:12px;border-color:var(--red);margin-bottom:8px;">🔻 跌幅前5</div>
-<div style="font-size:12px;line-height:1.8;">
-1 601778晶科科技 ¥6.96 <span style="color:var(--green);">▼-7.45%</span><br>
-2 600780通宝能源 ¥7.04 <span style="color:var(--green);">▼-3.16%</span><br>
-3 600509天富能源 ¥10.03 <span style="color:var(--green);">▼-2.90%</span><br>
-4 002129TCL中环 ¥9.83 <span style="color:var(--green);">▼-2.58%</span><br>
-5 601117中国化学 ¥8.10 <span style="color:var(--green);">▼-1.70%</span>
+<div class="sec-title" style="font-size:12px;border-color:var(--green);margin-bottom:8px;">🔻 跌幅前5</div>
+<div class="mini-tbl">
+<div class="mt-hdr"><span class="mt-n">#</span><span class="mt-c">代码</span><span class="mt-m">名称</span><span class="mt-p">价格</span><span class="mt-z">涨跌幅</span></div>
+<div class="mt-row"><span class="mt-n">1</span><span class="mt-c">601778</span><span class="mt-m">晶科科技</span><span class="mt-p">¥6.96</span><span class="mt-z down">▼-7.45%</span></div>
+<div class="mt-row"><span class="mt-n">2</span><span class="mt-c">600780</span><span class="mt-m">通宝能源</span><span class="mt-p">¥7.04</span><span class="mt-z down">▼-3.16%</span></div>
+<div class="mt-row"><span class="mt-n">3</span><span class="mt-c">600509</span><span class="mt-m">天富能源</span><span class="mt-p">¥10.03</span><span class="mt-z down">▼-2.90%</span></div>
+<div class="mt-row"><span class="mt-n">4</span><span class="mt-c">002129</span><span class="mt-m">TCL中环</span><span class="mt-p">¥9.83</span><span class="mt-z down">▼-2.58%</span></div>
+<div class="mt-row"><span class="mt-n">5</span><span class="mt-c">601117</span><span class="mt-m">中国化学</span><span class="mt-p">¥8.10</span><span class="mt-z down">▼-1.70%</span></div>
 </div>
 </div>
 </div>
