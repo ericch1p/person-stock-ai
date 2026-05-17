@@ -2779,9 +2779,12 @@ function filterTable(cat){
       if(cat==='🔴 持仓') show=holds.includes(code);
       else if(cat==='📋 跟踪池') show=tracks.includes(code);
       else if(cat==='🚨 异常'){
-        // 涨跌幅绝对值>4%即标记异常
+        // 涨跌幅绝对值>4%即标记异常（去除▲▼符号）
         var chgCell=r.querySelector('.num.chg');
-        show=chgCell&&Math.abs(parseFloat(chgCell.textContent))>4;
+        if(chgCell){
+          var txt=chgCell.textContent.replace(/[▲▼]/g,'');
+          show=Math.abs(parseFloat(txt))>4;
+        }
       }
     }
     if(show&&q){var nm=r.cells[2]?.textContent?.toLowerCase().trim()||'';var cd=(r.cells[1]?.textContent||'').trim();show=cd.indexOf(q)>=0||nm.indexOf(q)>=0;}
