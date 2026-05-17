@@ -176,7 +176,31 @@ tr.clickable-row:hover {background:rgba(59,130,246,0.04);}
 .det-risk {font-size:12px;color:var(--danger);line-height:1.4;padding:6px 10px;background:var(--danger-bg);border-radius:var(--radius-sm);}
 .det-act {font-size:12px;font-weight:500;color:var(--success);line-height:1.4;padding:6px 10px;background:var(--success-bg);border-radius:var(--radius-sm);}
 
-.kline-wrap {width:100%;margin-bottom:16px;border-radius:var(--radius-sm);overflow:hidden;}
+/* 六层分析动态生成项 */
+.ly-grid {display:flex;flex-direction:column;gap:6px;}
+.ly-item {padding:6px 8px;border-radius:6px;font-size:12px;line-height:1.5;background:rgba(255,255,255,0.5);border:1px solid var(--border);}
+.ly-key {display:inline-block;padding:1px 6px;border-radius:4px;font-size:11px;font-weight:500;margin-right:6px;background:var(--primary-bg);color:var(--primary);}
+.ly-val {color:var(--fg-2);}
+
+/* 详情布局 */
+.det-hd-left {display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.det-rank {font-size:12px;font-weight:600;}
+.det-ind {font-size:11px;color:var(--fg-muted);}
+.det-top-row {display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;}
+.det-right-panel {display:flex;flex-direction:column;gap:10px;}
+.det-bottom-row {margin-top:16px;}
+.det-text {font-size:12px;line-height:1.5;padding:4px 0;color:var(--fg-2);}
+
+/* K线 */
+.kline-box {width:100%;}
+.kline-box .kline-title {font-size:12px;font-weight:600;margin-bottom:6px;color:var(--fg-2);}
+.kline-box .kl-mas {font-weight:400;font-size:11px;color:var(--fg-muted);}
+.kline-canvas {width:100%;border-radius:var(--radius-sm);}
+
+/* 指标 */
+.mv-k {font-weight:500;color:var(--fg);}
+.mv-v {font-family:var(--font-mono);font-weight:500;}
+.mv-n {font-size:11px;color:var(--fg-muted);}
 .kline-wrap canvas {width:100%;height:auto;display:block;border-radius:var(--radius-sm);}
 
 .det-close {
