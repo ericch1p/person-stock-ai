@@ -115,6 +115,22 @@ tr.main-row[onclick]:hover{background:var(--surface-container);}
 .mv-v{font-weight:600;color:var(--fg-2);font-family:var(--font-mono);}
 .mv-n{color:var(--fg-muted);font-size:11px;}
 
+/* Master consensus grid */
+.ms-item{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:var(--radius-pill);font-size:11px;background:var(--surface-container-low);border:1px solid var(--border);line-height:1.4;}
+.ms-buy{background:rgba(5,150,105,0.08);border-color:rgba(5,150,105,0.2);}
+.ms-hold{background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.2);}
+.ms-watch{background:rgba(148,163,184,0.08);border-color:rgba(148,163,184,0.2);}
+.ms-sell{background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2);}
+.ms-vote{font-weight:600;font-size:10px;color:var(--fg-muted);}
+.ms-buy .ms-vote{color:var(--green);}
+.ms-hold .ms-vote{color:#d97706;}
+.ms-sell .ms-vote{color:var(--red);}
+
+/* Strategy info */
+.si{display:flex;align-items:center;gap:4px;padding:3px 8px;background:var(--surface-container-low);border-radius:var(--radius-sm);font-size:11px;border:1px solid var(--border);}
+.si-k{color:var(--fg-muted);min-width:48px;}
+.si-v{font-weight:600;color:var(--fg-2);font-family:var(--font-mono);}
+
 /* Filter bar */
 .filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
 .filter-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:var(--radius-pill);font-size:12px;background:var(--surface);border:1px solid var(--border);color:var(--fg-2);cursor:pointer;transition:all .15s;user-select:none;}
@@ -632,7 +648,7 @@ th,td{padding:6px 8px;}
                 <div class="detail-header">
                   <div class="det-hd-left">
                     <span class="det-rank">🥇 等回调</span>
-                    <span class="det-ind">电力 · 区域龙头</span>
+                    <span class="det-ind">电力 · 京津冀供热龙头</span>
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('600578')">✕ 收起</span>
                 </div>
@@ -642,27 +658,32 @@ th,td{padding:6px 8px;}
                     <canvas id="kl-600578" class="kline-canvas"></canvas>
                   </div>
                   <div class="det-right-panel">
+<div class="det-section" style="grid-column:1/-1;">
+                      <div style="background:rgba(37,99,235,0.06);border-radius:var(--radius-sm);padding:8px 10px;font-size:12px;color:var(--primary);line-height:1.5;font-weight:500;">利润+102%弹性最大，但45%涨幅已透支。5买/5持有分歧明显，等回调再介入</div>
+                    </div>
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
-                      <div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;line-height:1.6;"><span class="mv-k">PE</span> <span class="mv-v">5.7</span> <span class="mv-n">有安全边际</span> | <span class="mv-k">PB</span> <span class="mv-v">1.86</span> <span class="mv-n">已修复</span> | <span class="mv-k">ROE</span> <span class="mv-v">32.6%</span> <span class="mv-n">极高</span> | <span class="mv-k">涨幅</span> <span class="mv-v">+45%</span> <span class="mv-n">短期过热</span></div>
+                      <div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;line-height:1.6;"><span class="mv-k">PE</span> <span class="mv-v">5.7</span> <span class="mv-n">安全边际</span> | <span class="mv-k">PB</span> <span class="mv-v">1.86</span> <span class="mv-n">已修复</span> | <span class="mv-k">ROE</span> <span class="mv-v">32.6%</span> <span class="mv-n">极高</span> | <span class="mv-k">涨幅</span> <span class="mv-v">+45%</span> <span class="mv-n">过热</span></div>
                     </div>
 <div class="det-section">
                       <div class="det-ttl">📈 PE·PB·利润</div>
-                      <div class="det-text">PE 5.7 低位但涨停透支</div>
-                      <div class="det-text">PB 1.86 已修复至净值上，涨幅45%</div>
-                      <div class="det-text">利润同比+102%弹性最大亮点</div>
+                      <div class="det-text">PE 5.7 低位但涨停后需警惕，短期透支</div>
+                      <div class="det-text">PB 1.86 已修复至净值上，120日涨幅45%</div>
+                      <div class="det-text">利润同比+102%弹性最大亮点，翻倍后基数抬高增速将放缓</div>
                     </div>
 <div class="det-section">
-                      <div class="det-ttl">👥 大师共识</div>
-                      <div class="det-text">5买/5持有分歧</div>
+                      <div class="det-ttl">👥 十大师共识</div>
+                      <div style="display:flex;flex-wrap:wrap;gap:3px;"><span class="ms-item ms-hold">格雷厄姆<span class="ms-vote">持有</span></span><span class="ms-item ms-buy">巴菲特<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">林奇<span class="ms-vote">买入</span></span><span class="ms-item ms-hold">费雪<span class="ms-vote">持有</span></span><span class="ms-item ms-buy">芒格<span class="ms-vote">买入</span></span><span class="ms-item ms-hold">马克斯<span class="ms-vote">持有</span></span><span class="ms-item ms-buy">段永平<span class="ms-vote">买入</span></span><span class="ms-item ms-hold">达利欧<span class="ms-vote">持有</span></span><span class="ms-item ms-watch">索罗斯<span class="ms-vote">观望</span></span><span class="ms-item ms-buy">西蒙斯<span class="ms-vote">买入</span></span></div>
+                      <div style="font-size:11px;color:var(--fg-muted);margin-top:4px;">十大师：5买/5持 — 分歧明显</div>
                     </div>
 <div class="det-section">
                       <div class="det-ttl">⚠️ 风险</div>
-                      <div class="det-risk">120日+45%涨幅过大</div>
+                      <div class="det-risk">120日+45%涨幅过大，短期追高风险显著 <span style="display:inline-block;margin-left:6px;padding:0 6px;border-radius:4px;font-size:10px;background:rgba(239,68,68,0.15);color:#ef4444;font-weight:500;">风险中高</span></div>
                     </div>
 <div class="det-section">
-                      <div class="det-ttl">📋 操作</div>
-                      <div class="det-act">⏳ 等¥6.50以下回调介入</div>
+                      <div class="det-ttl">📋 操作方案</div>
+                      <div class="det-act" style="padding:8px 10px;">⏳ 等¥6.50以下回调介入。仓位5-8%，中期目标¥8.00-9.00</div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:4px;"><div class="si"><span class="si-k">仓位</span><span class="si-v">5-8%（卫星仓位）</span></div><div class="si"><span class="si-k">买入区间</span><span class="si-v">¥5.80-6.50</span></div><div class="si"><span class="si-k">持有周期</span><span class="si-v">中期3-6个月</span></div><div class="si"><span class="si-k">止损</span><span class="si-v" style="color:var(--red);">跌破¥5.30（60日线）</span></div></div>
                     </div>
 </div>
                 </div>
@@ -812,7 +833,7 @@ th,td{padding:6px 8px;}
                 <div class="detail-header">
                   <div class="det-hd-left">
                     <span class="det-rank">⛔ 暂不介入</span>
-                    <span class="det-ind">光伏发电</span>
+                    <span class="det-ind">光伏发电 · 谨慎观望</span>
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('000591')">✕ 收起</span>
                 </div>
@@ -822,27 +843,32 @@ th,td{padding:6px 8px;}
                     <canvas id="kl-000591" class="kline-canvas"></canvas>
                   </div>
                   <div class="det-right-panel">
+<div class="det-section" style="grid-column:1/-1;">
+                      <div style="background:rgba(37,99,235,0.06);border-radius:var(--radius-sm);padding:8px 10px;font-size:12px;color:var(--primary);line-height:1.5;font-weight:500;">PE低是"价值陷阱"——应收125亿异常+利润-33%+0买/7不买</div>
+                    </div>
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
                       <div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;line-height:1.6;"><span class="mv-k">PE</span> <span class="mv-v">5.3</span> <span class="mv-n">低但异常</span> | <span class="mv-k">PB</span> <span class="mv-v">0.98</span> <span class="mv-n">近破净</span> | <span class="mv-k">利润</span> <span class="mv-v">-33%</span> <span class="mv-n">恶化</span> | <span class="mv-k">应收</span> <span class="mv-v">125亿</span> <span class="mv-n">⚠️</span></div>
                     </div>
 <div class="det-section">
                       <div class="det-ttl">📈 PE·PB·利润</div>
-                      <div class="det-text">PE 5.3 低但应收125亿异常</div>
-                      <div class="det-text">PB 0.98 接近破净</div>
-                      <div class="det-text">利润同比-33%恶化</div>
+                      <div class="det-text">PE 5.3 看似低但应收125亿异常，价值陷阱特征</div>
+                      <div class="det-text">PB 0.98 接近破净，价值陷阱</div>
+                      <div class="det-text">利润同比-33%持续恶化，0买/7不买明显看空</div>
                     </div>
 <div class="det-section">
-                      <div class="det-ttl">👥 大师共识</div>
-                      <div class="det-text">0买/7不买 — 明显看空</div>
+                      <div class="det-ttl">👥 十大师共识</div>
+                      <div style="display:flex;flex-wrap:wrap;gap:3px;"><span class="ms-item ms-watch">格雷厄姆<span class="ms-vote">观望</span></span><span class="ms-item ms-watch">巴菲特<span class="ms-vote">观望</span></span><span class="ms-item ms-sell">林奇<span class="ms-vote">不买</span></span><span class="ms-item ms-watch">费雪<span class="ms-vote">观望</span></span><span class="ms-item ms-sell">芒格<span class="ms-vote">不买</span></span><span class="ms-item ms-sell">马克斯<span class="ms-vote">不买</span></span><span class="ms-item ms-sell">段永平<span class="ms-vote">不买</span></span><span class="ms-item ms-sell">达利欧<span class="ms-vote">不买</span></span><span class="ms-item ms-watch">索罗斯<span class="ms-vote">观望</span></span><span class="ms-item ms-sell">西蒙斯<span class="ms-vote">不买</span></span></div>
+                      <div style="font-size:11px;color:var(--fg-muted);margin-top:4px;">十大师：0买/7不买 — 明显看空，价值陷阱</div>
                     </div>
 <div class="det-section">
                       <div class="det-ttl">⚠️ 风险</div>
-                      <div class="det-risk">应收125亿、利润-33%</div>
+                      <div class="det-risk">应收125亿异常、利润持续恶化、全行业产能过剩传导 <span style="display:inline-block;margin-left:6px;padding:0 6px;border-radius:4px;font-size:10px;background:rgba(239,68,68,0.15);color:#ef4444;font-weight:500;">风险中高</span></div>
                     </div>
 <div class="det-section">
-                      <div class="det-ttl">📋 操作</div>
-                      <div class="det-act">⛔ 应收125亿异常，暂不介入</div>
+                      <div class="det-ttl">📋 操作方案</div>
+                      <div class="det-act" style="padding:8px 10px;">⛔ 应收125亿异常，暂不介入。等待应收账款问题解决</div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:4px;"><div class="si"><span class="si-k">仓位</span><span class="si-v">0%（不介入）</span></div><div class="si"><span class="si-k">买入区间</span><span class="si-v">等待信号</span></div><div class="si"><span class="si-k">持有周期</span><span class="si-v">等待观察</span></div><div class="si"><span class="si-k">止损</span><span class="si-v" style="color:var(--red);">不适合介入</span></div></div>
                     </div>
 </div>
                 </div>
@@ -942,27 +968,32 @@ th,td{padding:6px 8px;}
                     <canvas id="kl-000690" class="kline-canvas"></canvas>
                   </div>
                   <div class="det-right-panel">
+<div class="det-section" style="grid-column:1/-1;">
+                      <div style="background:rgba(37,99,235,0.06);border-radius:var(--radius-sm);padding:8px 10px;font-size:12px;color:var(--primary);line-height:1.5;font-weight:500;">PE仅5倍+PB破净0.91+利润暴增45%+负债率40%健康——四方共振的极品价值洼地</div>
+                    </div>
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
-                      <div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;line-height:1.6;"><span class="mv-k">PE</span> <span class="mv-v">5.0</span> <span class="mv-n">最低10%分位</span> | <span class="mv-k">PB</span> <span class="mv-v">0.91</span> <span class="mv-n">破净，低于行均值</span> | <span class="mv-k">ROE</span> <span class="mv-v">8.2%</span> <span class="mv-n">回升中</span> | <span class="mv-k">股息率</span> <span class="mv-v">3.5%</span> <span class="mv-n">有安全垫</span></div>
+                      <div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;line-height:1.6;"><span class="mv-k">PE</span> <span class="mv-v">5.0</span> <span class="mv-n">最低10%分位</span> | <span class="mv-k">PB</span> <span class="mv-v">0.91</span> <span class="mv-n">破净折扣</span> | <span class="mv-k">ROE</span> <span class="mv-v">8.2%</span> <span class="mv-n">回升中</span> | <span class="mv-k">股息率</span> <span class="mv-v">3.5%</span> <span class="mv-n">安全垫</span></div>
                     </div>
 <div class="det-section">
                       <div class="det-ttl">📈 PE·PB·利润</div>
-                      <div class="det-text">PE 5.0 处于近5年最低10%分位</div>
-                      <div class="det-text">PB 0.91 破净，资产价值被低估</div>
-                      <div class="det-text">归母净利润同比+45%，盈利修复趋势明确</div>
+                      <div class="det-text">PE 5.0 处于近5年最低10%分位，折价行业均值67%</div>
+                      <div class="det-text">PB 0.91 破净，资产价值被低估。格雷厄姆式安全边际</div>
+                      <div class="det-text">归母净利润10.24亿同比+45%，2026Q1净利3.10亿，盈利修复趋势明确</div>
                     </div>
 <div class="det-section">
-                      <div class="det-ttl">👥 大师共识</div>
-                      <div class="det-text">十大师共识：9买/1持 — 一致看好</div>
+                      <div class="det-ttl">👥 十大师共识</div>
+                      <div style="display:flex;flex-wrap:wrap;gap:3px;"><span class="ms-item ms-buy">格雷厄姆<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">巴菲特<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">林奇<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">费雪<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">芒格<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">马克斯<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">段永平<span class="ms-vote">买入</span></span><span class="ms-item ms-hold">达利欧<span class="ms-vote">持有</span></span><span class="ms-item ms-buy">索罗斯<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">西蒙斯<span class="ms-vote">买入</span></span></div>
+                      <div style="font-size:11px;color:var(--fg-muted);margin-top:4px;">十大师：9买/1持 — 一致看好</div>
                     </div>
 <div class="det-section">
                       <div class="det-ttl">⚠️ 风险</div>
-                      <div class="det-risk">煤价反弹、来水不及预期、补贴拖欠</div>
+                      <div class="det-risk">煤价反弹压缩利润空间、来水不及预期、补贴拖欠 <span style="display:inline-block;margin-left:6px;padding:0 6px;border-radius:4px;font-size:10px;background:rgba(245,158,11,0.15);color:#d97706;font-weight:500;">风险中低</span></div>
                     </div>
 <div class="det-section">
-                      <div class="det-ttl">📋 操作</div>
-                      <div class="det-act">✅ 已入区间¥5.40-5.60，下周一建仓</div>
+                      <div class="det-ttl">📋 操作方案</div>
+                      <div class="det-act" style="padding:8px 10px;">✅ 已入区间¥5.40-5.60，下周一建仓。仓位10-15%，中期目标¥8.00+</div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:4px;"><div class="si"><span class="si-k">仓位</span><span class="si-v">10-15%（核心仓位）</span></div><div class="si"><span class="si-k">买入区间</span><span class="si-v">¥4.60-5.80</span></div><div class="si"><span class="si-k">持有周期</span><span class="si-v">中期6-12个月</span></div><div class="si"><span class="si-k">止损</span><span class="si-v" style="color:var(--red);">跌破¥4.18（120日低点）</span></div></div>
                     </div>
 </div>
                 </div>
@@ -992,7 +1023,7 @@ th,td{padding:6px 8px;}
                 <div class="detail-header">
                   <div class="det-hd-left">
                     <span class="det-rank">🥈 推荐</span>
-                    <span class="det-ind">综合能源 · 小市值</span>
+                    <span class="det-ind">综合能源 · 山西改革标杆</span>
                   </div>
                   <span class="det-close" onclick="event.stopPropagation();toggleDetail('600780')">✕ 收起</span>
                 </div>
@@ -1002,27 +1033,32 @@ th,td{padding:6px 8px;}
                     <canvas id="kl-600780" class="kline-canvas"></canvas>
                   </div>
                   <div class="det-right-panel">
+<div class="det-section" style="grid-column:1/-1;">
+                      <div style="background:rgba(37,99,235,0.06);border-radius:var(--radius-sm);padding:8px 10px;font-size:12px;color:var(--primary);line-height:1.5;font-weight:500;">PB 0.94近破净+ROE 14.5%优秀+PE 6.5合理+负债率30%极低——小而美</div>
+                    </div>
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
                       <div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;line-height:1.6;"><span class="mv-k">PE</span> <span class="mv-v">6.5</span> <span class="mv-n">合理</span> | <span class="mv-k">PB</span> <span class="mv-v">0.94</span> <span class="mv-n">近破净</span> | <span class="mv-k">ROE</span> <span class="mv-v">14.5%</span> <span class="mv-n">优秀</span> | <span class="mv-k">市值</span> <span class="mv-v">81亿</span> <span class="mv-n">弹性</span></div>
                     </div>
 <div class="det-section">
                       <div class="det-ttl">📈 PE·PB·利润</div>
-                      <div class="det-text">PE 6.5 历史中位偏下</div>
-                      <div class="det-text">PB 0.94 接近破净</div>
-                      <div class="det-text">利润+26%稳健增长</div>
+                      <div class="det-text">PE 6.5 历史中位偏下，合理偏低估值区间</div>
+                      <div class="det-text">PB 0.94 接近破净，安全垫充足</div>
+                      <div class="det-text">利润+26%稳健增长，小而美标的</div>
                     </div>
 <div class="det-section">
-                      <div class="det-ttl">👥 大师共识</div>
-                      <div class="det-text">8买/2持 — 机构认可度高</div>
+                      <div class="det-ttl">👥 十大师共识</div>
+                      <div style="display:flex;flex-wrap:wrap;gap:3px;"><span class="ms-item ms-buy">格雷厄姆<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">巴菲特<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">林奇<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">费雪<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">芒格<span class="ms-vote">买入</span></span><span class="ms-item ms-hold">马克斯<span class="ms-vote">持有</span></span><span class="ms-item ms-hold">段永平<span class="ms-vote">持有</span></span><span class="ms-item ms-buy">达利欧<span class="ms-vote">买入</span></span><span class="ms-item ms-watch">索罗斯<span class="ms-vote">观望</span></span><span class="ms-item ms-buy">西蒙斯<span class="ms-vote">买入</span></span></div>
+                      <div style="font-size:11px;color:var(--fg-muted);margin-top:4px;">十大师：8买/2持 — 机构认可度高</div>
                     </div>
 <div class="det-section">
                       <div class="det-ttl">⚠️ 风险</div>
-                      <div class="det-risk">81亿市值流动性偏弱</div>
+                      <div class="det-risk">81亿市值流动性偏弱，小市值弹性大波动也大 <span style="display:inline-block;margin-left:6px;padding:0 6px;border-radius:4px;font-size:10px;background:rgba(245,158,11,0.15);color:#d97706;font-weight:500;">风险中低</span></div>
                     </div>
 <div class="det-section">
-                      <div class="det-ttl">📋 操作</div>
-                      <div class="det-act">✅ 已入¥6.80-7.10，小仓位介入</div>
+                      <div class="det-ttl">📋 操作方案</div>
+                      <div class="det-act" style="padding:8px 10px;">✅ 已入¥6.80-7.10，小仓位介入。回调至¥6.00-6.30加仓</div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:4px;"><div class="si"><span class="si-k">仓位</span><span class="si-v">5-8%（卫星仓位）</span></div><div class="si"><span class="si-k">买入区间</span><span class="si-v">¥6.00-7.10</span></div><div class="si"><span class="si-k">持有周期</span><span class="si-v">中长期6-12个月，目标¥9.00+</span></div><div class="si"><span class="si-k">止损</span><span class="si-v" style="color:var(--red);">跌破¥5.50（前低）</span></div></div>
                     </div>
 </div>
                 </div>
@@ -1542,27 +1578,32 @@ th,td{padding:6px 8px;}
                     <canvas id="kl-601128" class="kline-canvas"></canvas>
                   </div>
                   <div class="det-right-panel">
+<div class="det-section" style="grid-column:1/-1;">
+                      <div style="background:rgba(37,99,235,0.06);border-radius:var(--radius-sm);padding:8px 10px;font-size:12px;color:var(--primary);line-height:1.5;font-weight:500;">PB 0.74破净+ROE 11%+不良率0.74%+股息率4.2%。银行中综合最优</div>
+                    </div>
 <div class="det-section">
                       <div class="det-ttl">📊 核心估值</div>
-                      <div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;line-height:1.6;"><span class="mv-k">PE</span> <span class="mv-v">6.5</span> <span class="mv-n">银行中低位</span> | <span class="mv-k">PB</span> <span class="mv-v">0.74</span> <span class="mv-n">破净安全垫</span> | <span class="mv-k">股息率</span> <span class="mv-v">4.2%</span> <span class="mv-n">高股息</span> | <span class="mv-k">不良率</span> <span class="mv-v">0.74%</span> <span class="mv-n">优质</span></div>
+                      <div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;line-height:1.6;"><span class="mv-k">PE</span> <span class="mv-v">6.5</span> <span class="mv-n">银行中低位</span> | <span class="mv-k">PB</span> <span class="mv-v">0.74</span> <span class="mv-n">破净安全垫</span> | <span class="mv-k">股息率</span> <span class="mv-v">4.2%</span> <span class="mv-n">高股息</span> | <span class="mv-k">不良率</span> <span class="mv-v">0.74%</span> <span class="mv-n">极优</span></div>
                     </div>
 <div class="det-section">
                       <div class="det-ttl">📈 PE·PB·利润</div>
-                      <div class="det-text">PE 6.5 匹配+11%成长</div>
-                      <div class="det-text">PB 0.74 破净有安全垫</div>
-                      <div class="det-text">利润+11%，银行中成长最优</div>
+                      <div class="det-text">PE 6.5 匹配+11%成长，银行中成长最优</div>
+                      <div class="det-text">PB 0.74 破净有安全垫，股息率4.2%有保底收益</div>
+                      <div class="det-text">利润+11%稳健增长，银行中综合评分最高</div>
                     </div>
 <div class="det-section">
-                      <div class="det-ttl">👥 大师共识</div>
-                      <div class="det-text">8买/2持 — 银行中最高</div>
+                      <div class="det-ttl">👥 十大师共识</div>
+                      <div style="display:flex;flex-wrap:wrap;gap:3px;"><span class="ms-item ms-buy">格雷厄姆<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">巴菲特<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">林奇<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">费雪<span class="ms-vote">买入</span></span><span class="ms-item ms-buy">芒格<span class="ms-vote">买入</span></span><span class="ms-item ms-hold">马克斯<span class="ms-vote">持有</span></span><span class="ms-item ms-buy">段永平<span class="ms-vote">买入</span></span><span class="ms-item ms-hold">达利欧<span class="ms-vote">持有</span></span><span class="ms-item ms-watch">索罗斯<span class="ms-vote">观望</span></span><span class="ms-item ms-buy">西蒙斯<span class="ms-vote">买入</span></span></div>
+                      <div style="font-size:11px;color:var(--fg-muted);margin-top:4px;">十大师：8买/2持 — 银行中最高</div>
                     </div>
 <div class="det-section">
                       <div class="det-ttl">⚠️ 风险</div>
-                      <div class="det-risk">地产敞口、区域经济波动</div>
+                      <div class="det-risk">地产敞口可控、区域经济波动影响有限 <span style="display:inline-block;margin-left:6px;padding:0 6px;border-radius:4px;font-size:10px;background:rgba(245,158,11,0.15);color:#d97706;font-weight:500;">风险中低</span></div>
                     </div>
 <div class="det-section">
-                      <div class="det-ttl">📋 操作</div>
-                      <div class="det-act">✅ 可建仓区间¥7.00-7.30</div>
+                      <div class="det-ttl">📋 操作方案</div>
+                      <div class="det-act" style="padding:8px 10px;">✅ 可建仓区间¥7.00-7.30。仓位8-12%，中期目标¥9.00-10.00</div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:4px;"><div class="si"><span class="si-k">仓位</span><span class="si-v">8-12%（核心仓位）</span></div><div class="si"><span class="si-k">买入区间</span><span class="si-v">¥6.50-7.30</span></div><div class="si"><span class="si-k">持有周期</span><span class="si-v">中长期6-12个月</span></div><div class="si"><span class="si-k">止损</span><span class="si-v" style="color:var(--red);">跌破¥5.80（净资产附近）</span></div></div>
                     </div>
 </div>
                 </div>
@@ -2496,14 +2537,14 @@ var KLINES={  "000690": [
 ["2026-05-14",11.16,11.39,10.91,10.94,78505493],
 ["2026-05-15",10.91,10.93,10.32,10.37,102257066]
   ]};
-var DEPTH={  "000690":{rank:"🥇 强烈推荐",industry:"新能源电力 · 火电转型",pe:"PE 5.0 处于近5年最低10%分位",pb:"PB 0.91 破净，资产价值被低估",profit:"归母净利润同比+45%，盈利修复趋势明确",consensus:"十大师共识：9买/1持 — 一致看好",layers:[["志","双碳战略下火电转新能源"],["道","广东区域电力龙头"],["势","煤价下移+电价改善双击"],["法","ROE回升至8%+"],["术","量价齐升"],["器","火+光+风多元布局"]],risk:"煤价反弹、来水不及预期、补贴拖欠",action:"✅ 已入区间¥5.40-5.60，下周一建仓",metrics:[["PE","5.0","最低10%分位"],["PB","0.91","破净，低于行均值"],["ROE","8.2%","回升中"],["股息率","3.5%","有安全垫"]]},
-  "600578":{rank:"🥇 等回调",industry:"电力 · 区域龙头",pe:"PE 5.7 低位但涨停透支",pb:"PB 1.86 已修复至净值上，涨幅45%",profit:"利润同比+102%弹性最大亮点",consensus:"5买/5持有分歧",layers:[["志","京津冀保供核心"],["道","北京周边供热龙头"],["势","碳中和利好但过热"],["法","翻倍后基数抬高"],["术","KDJ钝化超买"],["器","火+风+光多能"]],risk:"120日+45%涨幅过大",action:"⏳ 等¥6.50以下回调介入",metrics:[["PE","5.7","有安全边际"],["PB","1.86","已修复"],["ROE","32.6%","极高"],["涨幅","+45%","短期过热"]]},
-  "600780":{rank:"🥈 推荐",industry:"综合能源 · 小市值",pe:"PE 6.5 历史中位偏下",pb:"PB 0.94 接近破净",profit:"利润+26%稳健增长",consensus:"8买/2持 — 机构认可度高",layers:[["志","山西能源改革标杆"],["道","区域电网+气+热"],["势","能源价改利好"],["法","ROE 14%+领先"],["术","81亿弹性标的"],["器","电网+燃气+供热"]],risk:"81亿市值流动性偏弱",action:"✅ 已入¥6.80-7.10，小仓位介入",metrics:[["PE","6.5","合理"],["PB","0.94","近破净"],["ROE","14.5%","优秀"],["市值","81亿","弹性"]]},
-  "601128":{rank:"🥈 推荐",industry:"银行 · 农商行龙头",pe:"PE 6.5 匹配+11%成长",pb:"PB 0.74 破净有安全垫",profit:"利润+11%，银行中成长最优",consensus:"8买/2持 — 银行中最高",layers:[["志","小微金融标杆"],["道","常熟深耕+异地扩张"],["势","中小银行改革利好"],["法","ROE 11%+领先同业"],["术","息差稳定+不良低"],["器","科技赋能+渠道下沉"]],risk:"地产敞口、区域经济波动",action:"✅ 可建仓区间¥7.00-7.30",metrics:[["PE","6.5","银行中低位"],["PB","0.74","破净安全垫"],["股息率","4.2%","高股息"],["不良率","0.74%","优质"]]},
-  "600509":{rank:"",industry:"电力 · 综合能源",pe:"",pb:"",profit:"",consensus:"",layers:[["志","新疆能源枢纽"],["道","区域电网+燃气"],["势","西部大开发利好"],["法","ROE 8%+"],["术","分红稳定"],["器","电网+燃气+供热"]],risk:"区域经济局限、成长性一般",action:"⚠️ 暂持观察",metrics:[["PE","9.3","合理偏高"],["PB","1.77","偏高"],["ROE","19%","较好"],["股息率","--","--"]]},
-  "600256":{rank:"",industry:"能源 · 煤化工",pe:"",pb:"",profit:"",consensus:"",layers:[["志","能源安全"],["道","LNG+煤化工双驱"],["势","天然气需求增长"],["法","ROE波动较大"],["术","高弹性周期股"],["器","煤炭+LNG+氢能"]],risk:"煤价下行、LNG进口竞争",action:"⚠️ 周期股适合波段",metrics:[["PE","6.0","中低位"],["PB","1.05","近净值"],["ROE","17.5%","较好"],["股息率","4.0%","高股息"]]},
-  "000591":{rank:"⛔ 暂不介入",industry:"光伏发电",pe:"PE 5.3 低但应收125亿异常",pb:"PB 0.98 接近破净",profit:"利润同比-33%恶化",consensus:"0买/7不买 — 明显看空",layers:[["志","光伏电站运营"],["道","龙头国企"],["势","产能过剩传导"],["法","应收125亿风险"],["术","现金流恶化"],["器","光伏电站为主"]],risk:"应收125亿、利润-33%",action:"⛔ 应收125亿异常，暂不介入",metrics:[["PE","5.3","低但异常"],["PB","0.98","近破净"],["利润","-33%","恶化"],["应收","125亿","⚠️"]]},
-  "601778":{rank:"",industry:"光伏发电",pe:"",pb:"",profit:"",consensus:"",layers:[["志","分布式光伏"],["道","全球布局"],["势","能源革命受益"],["法","利润增长慢"],["术","需要催化剂"],["器","光伏电站运营"]],risk:"补贴依赖大、老电站多",action:"⚠️ 跟踪不介入",metrics:[["PE","6.8","偏低"],["PB","1.65","偏高"],["ROE","24%","高"],["股息率","--","--"]]}};
+var DEPTH={  "000690":{rank:"🥇 强烈推荐",industry:"新能源电力 · 火电转型",pe:"PE 5.0 处于近5年最低10%分位，折价行业均值67%",pb:"PB 0.91 破净，资产价值被低估。格雷厄姆式安全边际",profit:"归母净利润10.24亿同比+45%，2026Q1净利3.10亿，盈利修复趋势明确",consensus:"十大师：9买/1持 — 一致看好",layers:[["志·投资信仰","PB 0.91破净+PE 5倍极度低估+段永平"睡得着觉"测试通过"],["道·商业逻辑","建电厂→发电→卖电→收电费，商业模式清晰，电力刚需现金流可预测"],["势·周期趋势","煤价回落→火电利润率回升，新能源装机持续增长，量价齐升双击"],["法·财务质量","ROE~8.5%回升中，负债率40.3%偏低，应收10.9亿仅占营收12.6%"],["术·技术面","120日+12.8%趋势向好，回调幅度可控，量价配合良好"],["器·护城河","火+风+光多元布局，广东省电力需求旺盛，消纳保障充分"]],risk:"煤价反弹压缩利润空间、来水不及预期、补贴拖欠",action:"✅ 已入区间¥5.40-5.60，下周一建仓。仓位10-15%，中期目标¥8.00+",metrics:[["PE","5.0","最低10%分位"],["PB","0.91","破净折扣"],["ROE","8.2%","回升中"],["股息率","3.5%","安全垫"]],masters:[["格雷厄姆","买入"],["巴菲特","买入"],["林奇","买入"],["费雪","买入"],["芒格","买入"],["马克斯","买入"],["段永平","买入"],["达利欧","持有"],["索罗斯","买入"],["西蒙斯","买入"]],summary:"PE仅5倍+PB破净0.91+利润暴增45%+负债率40%健康——四方共振的极品价值洼地",position:"10-15%（核心仓位）",strategy:"分批建仓：第一批¥5.40-5.60 → 第二批¥5.00-5.20 → 第三批¥4.60-4.80",hold_period:"中期6-12个月",buy_range:"¥4.60-5.80",stop_loss:"跌破¥4.18（120日低点）",risk_level:"中低",summary:"PE仅5倍+PB破净0.91+利润暴增45%+负债率40%健康——四方共振的极品价值洼地"},
+  "600578":{rank:"🥇 等回调",industry:"电力 · 京津冀供热龙头",pe:"PE 5.7 低位但涨停后需警惕，短期透支",pb:"PB 1.86 已修复至净值上，120日涨幅45%",profit:"利润同比+102%弹性最大亮点，翻倍后基数抬高增速将放缓",consensus:"十大师：5买/5持 — 分歧明显",layers:[["志·投资信仰","低PB+高ROE+高增长价值投资典型，但追涨需等安全边际"],["道·商业逻辑","北京周边供热+供电双龙头，京津冀核心保供，火电为基+风光增量"],["势·周期趋势","2025利润暴增102%弹性惊人，但120日+45%已透支，KDJ超买"],["法·财务质量","ROE 32.6%极高，PB 1.86已修复，翻倍后基数抬高增速放缓"],["术·技术面","短期过热KDJ钝化明显，等回调<¥6.50再介入"],["器·护城河","火电+风电+光伏多能互补，京津冀供热刚需"]],risk:"120日+45%涨幅过大，短期追高风险显著",action:"⏳ 等¥6.50以下回调介入。仓位5-8%，中期目标¥8.00-9.00",metrics:[["PE","5.7","安全边际"],["PB","1.86","已修复"],["ROE","32.6%","极高"],["涨幅","+45%","过热"]],masters:[["格雷厄姆","持有"],["巴菲特","买入"],["林奇","买入"],["费雪","持有"],["芒格","买入"],["马克斯","持有"],["段永平","买入"],["达利欧","持有"],["索罗斯","观望"],["西蒙斯","买入"]],summary:"利润+102%弹性最大，但45%涨幅已透支。5买/5持有分歧明显，等回调再介入",position:"5-8%（卫星仓位）",strategy:"等回调至¥6.50以下分批建仓：第一批¥6.20-6.50 → 第二批¥5.80-6.00",hold_period:"中期3-6个月",buy_range:"¥5.80-6.50",stop_loss:"跌破¥5.30（60日线）",risk_level:"中高",summary:"利润+102%弹性最大，但45%涨幅已透支。5买/5持有分歧明显，等回调再介入"},
+  "600780":{rank:"🥈 推荐",industry:"综合能源 · 山西改革标杆",pe:"PE 6.5 历史中位偏下，合理偏低估值区间",pb:"PB 0.94 接近破净，安全垫充足",profit:"利润+26%稳健增长，小而美标的",consensus:"十大师：8买/2持 — 机构认可度高",layers:[["志·投资信仰","PB 0.94近破净+PE 6.5合理偏低，山西能源改革标杆小而美"],["道·商业逻辑","区域综合能源龙头：电网+燃气+供热三驾马车，基础设施工具有壁垒"],["势·周期趋势","能源价改政策利好直接受益，煤价下行周期利润改善可期"],["法·财务质量","ROE 14.5%远超行业平均，负债率30%极低财务稳健"],["术·技术面","81亿小市值弹性大，流动性偏弱，适合小仓位长持"],["器·护城河","电网+燃气+供热三维基础设施壁垒高，山西能源改革排头兵"]],risk:"81亿市值流动性偏弱，小市值弹性大波动也大",action:"✅ 已入¥6.80-7.10，小仓位介入。回调至¥6.00-6.30加仓",metrics:[["PE","6.5","合理"],["PB","0.94","近破净"],["ROE","14.5%","优秀"],["市值","81亿","弹性"]],masters:[["格雷厄姆","买入"],["巴菲特","买入"],["林奇","买入"],["费雪","买入"],["芒格","买入"],["马克斯","持有"],["段永平","持有"],["达利欧","买入"],["索罗斯","观望"],["西蒙斯","买入"]],summary:"PB 0.94近破净+ROE 14.5%优秀+PE 6.5合理+负债率30%极低——小而美",position:"5-8%（卫星仓位）",strategy:"小仓位介入后持有观察，若回调至¥6.00-6.30加仓",hold_period:"中长期6-12个月，目标¥9.00+",buy_range:"¥6.00-7.10",stop_loss:"跌破¥5.50（前低）",risk_level:"中低",summary:"PB 0.94近破净+ROE 14.5%优秀+PE 6.5合理+负债率30%极低——小而美"},
+  "601128":{rank:"🥈 推荐",industry:"银行 · 农商行龙头",pe:"PE 6.5 匹配+11%成长，银行中成长最优",pb:"PB 0.74 破净有安全垫，股息率4.2%有保底收益",profit:"利润+11%稳健增长，银行中综合评分最高",consensus:"十大师：8买/2持 — 银行中最高",layers:[["志·投资信仰","PB 0.74破净+PE 6.5+股息率4.2%+不良率0.74%，银行中的优秀生"],["道·商业逻辑","小微金融标杆银行，深耕常熟+异地扩张，息差稳定不良率行业最低"],["势·周期趋势","中小银行改革利好，银行板块估值修复周期，优质农商行受益主线"],["法·财务质量","ROE 11%+领先农商行，不良率0.74%极优，拨备覆盖率超500%"],["术·技术面","PB 0.74破净安全垫足，股息率4.2%具备保底收益"],["器·护城河","科技赋能+渠道下沉，农商行数字化转型标杆"]],risk:"地产敞口可控、区域经济波动影响有限",action:"✅ 可建仓区间¥7.00-7.30。仓位8-12%，中期目标¥9.00-10.00",metrics:[["PE","6.5","银行中低位"],["PB","0.74","破净安全垫"],["股息率","4.2%","高股息"],["不良率","0.74%","极优"]],masters:[["格雷厄姆","买入"],["巴菲特","买入"],["林奇","买入"],["费雪","买入"],["芒格","买入"],["马克斯","持有"],["段永平","买入"],["达利欧","持有"],["索罗斯","观望"],["西蒙斯","买入"]],summary:"PB 0.74破净+ROE 11%+不良率0.74%+股息率4.2%。银行中综合最优",position:"8-12%（核心仓位）",strategy:"分批建仓：第一批¥7.00-7.30 → 第二批¥6.50-6.80",hold_period:"中长期6-12个月",buy_range:"¥6.50-7.30",stop_loss:"跌破¥5.80（净资产附近）",risk_level:"中低",summary:"PB 0.74破净+ROE 11%+不良率0.74%+股息率4.2%。银行中综合最优"},
+  "600509":{rank:"",industry:"电力 · 综合能源",pe:"",pb:"",profit:"",consensus:"",layers:[["志","新疆能源枢纽"],["道","区域电网+燃气"],["势","西部大开发利好"],["法","ROE 8%+"],["术","分红稳定"],["器","电网+燃气+供热"]],risk:"区域经济局限、成长性一般",action:"⚠️ 暂持观察",metrics:[["PE","9.3","合理偏高"],["PB","1.77","偏高"],["ROE","19%","较好"],["股息率","--","--"]],masters:[],summary:"",position:"",strategy:"",hold_period:"",buy_range:"",stop_loss:"",risk_level:"",summary:""},
+  "600256":{rank:"",industry:"能源 · 煤化工",pe:"",pb:"",profit:"",consensus:"",layers:[["志","能源安全"],["道","LNG+煤化工双驱"],["势","天然气需求增长"],["法","ROE波动较大"],["术","高弹性周期股"],["器","煤炭+LNG+氢能"]],risk:"煤价下行、LNG进口竞争",action:"⚠️ 周期股适合波段",metrics:[["PE","6.0","中低位"],["PB","1.05","近净值"],["ROE","17.5%","较好"],["股息率","4.0%","高股息"]],masters:[],summary:"",position:"",strategy:"",hold_period:"",buy_range:"",stop_loss:"",risk_level:"",summary:""},
+  "000591":{rank:"⛔ 暂不介入",industry:"光伏发电 · 谨慎观望",pe:"PE 5.3 看似低但应收125亿异常，价值陷阱特征",pb:"PB 0.98 接近破净，价值陷阱",profit:"利润同比-33%持续恶化，0买/7不买明显看空",consensus:"十大师：0买/7不买 — 明显看空，价值陷阱",layers:[["志·投资信仰","PE 5.3估值极低，但利润下滑-33%提醒便宜有便宜的道理"],["道·商业逻辑","光伏电站运营龙头国企，行业产能过剩传导至运营端利润承压"],["势·周期趋势","光伏行业下行周期，全产业链利润压缩，电站运营端也受影响"],["法·财务质量","应收125亿占总资产30%+现金流恶化，0买/7不买明显看空"],["术·技术面","等待行业出清信号，目前没有右侧买入信号"],["器·护城河","光伏电站运营为主，技术门槛低，竞争激烈，护城河薄弱"]],risk:"应收125亿异常、利润持续恶化、全行业产能过剩传导",action:"⛔ 应收125亿异常，暂不介入。等待应收账款问题解决",metrics:[["PE","5.3","低但异常"],["PB","0.98","近破净"],["利润","-33%","恶化"],["应收","125亿","⚠️"]],masters:[["格雷厄姆","观望"],["巴菲特","观望"],["林奇","不买"],["费雪","观望"],["芒格","不买"],["马克斯","不买"],["段永平","不买"],["达利欧","不买"],["索罗斯","观望"],["西蒙斯","不买"]],summary:"PE低是\"价值陷阱\"——应收125亿异常+利润-33%+0买/7不买",position:"0%（不介入）",strategy:"等待应收账款问题解决、利润拐点确认后再评估",hold_period:"等待观察",buy_range:"等待信号",stop_loss:"不适合介入",risk_level:"中高",summary:"PE低是\"价值陷阱\"——应收125亿异常+利润-33%+0买/7不买"},
+  "601778":{rank:"",industry:"光伏发电",pe:"",pb:"",profit:"",consensus:"",layers:[["志","分布式光伏"],["道","全球布局"],["势","能源革命受益"],["法","利润增长慢"],["术","需要催化剂"],["器","光伏电站运营"]],risk:"补贴依赖大、老电站多",action:"⚠️ 跟踪不介入",metrics:[["PE","6.8","偏低"],["PB","1.65","偏高"],["ROE","24%","高"],["股息率","--","--"]],masters:[],summary:"",position:"",strategy:"",hold_period:"",buy_range:"",stop_loss:"",risk_level:"",summary:""}};
 
 function toggleDetail(code){
   var det = document.getElementById('detail-'+code);
