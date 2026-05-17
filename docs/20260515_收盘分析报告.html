@@ -185,6 +185,9 @@ tr.clickable-row:hover {background:rgba(59,130,246,0.04);}
 .filter-chip {display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--fg-muted);transition:all .15s;user-select:none;}
 .filter-chip:hover {border-color:var(--primary);color:var(--primary);background:var(--primary-bg);}
 .filter-chip.active {background:var(--primary);color:#fff;border-color:var(--primary);}
+.date-select {padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--surface);color:var(--fg);outline:none;cursor:pointer;}
+.date-select:focus {border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-bg);}
+.filter-count {font-size:11px;color:var(--fg-muted);padding:2px 8px;background:var(--primary-bg);border-radius:var(--radius-sm);white-space:nowrap;}
 .ly-grid {display:flex;flex-direction:column;gap:6px;}
 .ly-item {padding:6px 8px;border-radius:6px;font-size:12px;line-height:1.5;background:rgba(255,255,255,0.5);border:1px solid var(--border);}
 .ly-key {display:inline-block;padding:1px 6px;border-radius:4px;font-size:11px;font-weight:500;margin-right:6px;background:var(--primary-bg);color:var(--primary);}
@@ -333,11 +336,15 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
 <div class="sec-title" style="border-color:var(--primary);">🎯 深度分析标的一览 · <span style="font-weight:400;font-size:13px;color:var(--fg-muted);">18</span></div>
 
 <div class="filter-bar">
+<select id="reportDate" class="date-select">
+<option value="20260515" selected>2026-05-15 周五</option>
+</select>
 <input class="search-box" id="searchInput" placeholder="搜索代码或名称..." oninput="filterTable()">
-<span class="filter-chip active" onclick="setFilter(this,'all')">📌 全量</span>
-<span class="filter-chip" onclick="setFilter(this,'hold')">🔴 持仓</span>
-<span class="filter-chip" onclick="setFilter(this,'track')">📋 跟踪池</span>
-<span class="filter-chip" onclick="setFilter(this,'alert')">🚨 异常</span>
+<span class="filter-chip active" onclick="setFilter(this,'📌 全量')">📌 全量</span>
+<span class="filter-chip" onclick="setFilter(this,'🔴 持仓')">🔴 持仓</span>
+<span class="filter-chip" onclick="setFilter(this,'📋 跟踪池')">📋 跟踪池</span>
+<span class="filter-chip" onclick="setFilter(this,'🚨 异常')">🚨 异常</span>
+<span class="filter-count">20/20</span>
 </div>
 
 <div class="tbl-wrap">
@@ -362,7 +369,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">000001</td>
         <td><strong>上证指数</strong></td>
         <td class="num">¥4135.39</td>
-        <td class="num down">▼-1.02%</td>
+        <td class="num down chg">▼-1.02%</td>
         <td class="num">-1.0</td>
         <td class="num">0.00</td>
         <td class="num">1.0%</td>
@@ -422,7 +429,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">399001</td>
         <td><strong>深证成指</strong></td>
         <td class="num">¥15561.37</td>
-        <td class="num down">▼-1.17%</td>
+        <td class="num down chg">▼-1.17%</td>
         <td class="num">-1.0</td>
         <td class="num">0.00</td>
         <td class="num">1.0%</td>
@@ -482,7 +489,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">399006</td>
         <td><strong>创业板指</strong></td>
         <td class="num">¥3929.06</td>
-        <td class="num down">▼-0.56%</td>
+        <td class="num down chg">▼-0.56%</td>
         <td class="num">-1.0</td>
         <td class="num">0.00</td>
         <td class="num">1.0%</td>
@@ -542,7 +549,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">515180</td>
         <td><strong>红利ETF易方达</strong></td>
         <td class="num">¥1.42</td>
-        <td class="num down">▼-0.28%</td>
+        <td class="num down chg">▼-0.28%</td>
         <td class="num">1.3</td>
         <td class="num">0.00</td>
         <td class="num">0.9%</td>
@@ -602,7 +609,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">002948</td>
         <td><strong>青岛银行</strong></td>
         <td class="num">¥5.68</td>
-        <td class="num down">▼-3.89%</td>
+        <td class="num down chg">▼-3.89%</td>
         <td class="num">5.3</td>
         <td class="num">0.78</td>
         <td class="num">1.2%</td>
@@ -662,7 +669,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">002459</td>
         <td><strong>晶澳科技</strong></td>
         <td class="num">¥10.37</td>
-        <td class="num down">▼-5.21%</td>
+        <td class="num down chg">▼-5.21%</td>
         <td class="num">9.8</td>
         <td class="num">1.65</td>
         <td class="num">1.4%</td>
@@ -722,7 +729,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">600578</td>
         <td><strong>京能电力</strong></td>
         <td class="num">¥7.01</td>
-        <td class="num up">▲+10.05%</td>
+        <td class="num up chg">▲+10.05%</td>
         <td class="num">5.7</td>
         <td class="num">1.86</td>
         <td class="num">4.3%</td>
@@ -787,7 +794,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">600509</td>
         <td><strong>天富能源</strong></td>
         <td class="num">¥10.03</td>
-        <td class="num down">▼-2.90%</td>
+        <td class="num down chg">▼-2.90%</td>
         <td class="num">9.3</td>
         <td class="num">1.77</td>
         <td class="num">3.9%</td>
@@ -847,7 +854,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">600256</td>
         <td><strong>广汇能源</strong></td>
         <td class="num">¥6.40</td>
-        <td class="num up">▲+3.73%</td>
+        <td class="num up chg">▲+3.73%</td>
         <td class="num">5.5</td>
         <td class="num">1.68</td>
         <td class="num">1.6%</td>
@@ -907,7 +914,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">000591</td>
         <td><strong>太阳能</strong></td>
         <td class="num">¥6.01</td>
-        <td class="num up">▲+3.09%</td>
+        <td class="num up chg">▲+3.09%</td>
         <td class="num">5.2</td>
         <td class="num">0.98</td>
         <td class="num">1.0%</td>
@@ -972,7 +979,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">601778</td>
         <td><strong>晶科科技</strong></td>
         <td class="num">¥6.96</td>
-        <td class="num down">▼-7.45%</td>
+        <td class="num down chg">▼-7.45%</td>
         <td class="num">6.8</td>
         <td class="num">1.65</td>
         <td class="num">1.1%</td>
@@ -1032,7 +1039,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">000690</td>
         <td><strong>宝新能源</strong></td>
         <td class="num">¥5.48</td>
-        <td class="num down">▼-1.44%</td>
+        <td class="num down chg">▼-1.44%</td>
         <td class="num">5.0</td>
         <td class="num">0.91</td>
         <td class="num">0.9%</td>
@@ -1097,7 +1104,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">600780</td>
         <td><strong>通宝能源</strong></td>
         <td class="num">¥7.04</td>
-        <td class="num down">▼-3.16%</td>
+        <td class="num down chg">▼-3.16%</td>
         <td class="num">6.5</td>
         <td class="num">0.94</td>
         <td class="num">0.9%</td>
@@ -1162,7 +1169,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">002212</td>
         <td><strong>天融信</strong></td>
         <td class="num">¥7.27</td>
-        <td class="num down">▼-1.22%</td>
+        <td class="num down chg">▼-1.22%</td>
         <td class="num">6.6</td>
         <td class="num">0.90</td>
         <td class="num">0.9%</td>
@@ -1222,7 +1229,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">600707</td>
         <td><strong>彩虹股份</strong></td>
         <td class="num">¥10.69</td>
-        <td class="num down">▼-0.74%</td>
+        <td class="num down chg">▼-0.74%</td>
         <td class="num">9.7</td>
         <td class="num">1.76</td>
         <td class="num">1.2%</td>
@@ -1282,7 +1289,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">002129</td>
         <td><strong>TCL中环</strong></td>
         <td class="num">¥9.83</td>
-        <td class="num down">▼-2.58%</td>
+        <td class="num down chg">▼-2.58%</td>
         <td class="num">9.1</td>
         <td class="num">1.99</td>
         <td class="num">1.0%</td>
@@ -1342,7 +1349,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">601699</td>
         <td><strong>潞安环能</strong></td>
         <td class="num">¥15.15</td>
-        <td class="num up">▲+2.30%</td>
+        <td class="num up chg">▲+2.30%</td>
         <td class="num">13.3</td>
         <td class="num">0.98</td>
         <td class="num">1.6%</td>
@@ -1402,7 +1409,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">601117</td>
         <td><strong>中国化学</strong></td>
         <td class="num">¥8.10</td>
-        <td class="num down">▼-1.70%</td>
+        <td class="num down chg">▼-1.70%</td>
         <td class="num">7.4</td>
         <td class="num">0.72</td>
         <td class="num">1.0%</td>
@@ -1462,7 +1469,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">601939</td>
         <td><strong>建设银行</strong></td>
         <td class="num">¥9.82</td>
-        <td class="num up">▲+0.82%</td>
+        <td class="num up chg">▲+0.82%</td>
         <td class="num">8.8</td>
         <td class="num">0.72</td>
         <td class="num">1.4%</td>
@@ -1522,7 +1529,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">601288</td>
         <td><strong>农业银行</strong></td>
         <td class="num">¥6.67</td>
-        <td class="num down">▼-1.33%</td>
+        <td class="num down chg">▼-1.33%</td>
         <td class="num">6.1</td>
         <td class="num">0.84</td>
         <td class="num">1.1%</td>
@@ -1582,7 +1589,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">601838</td>
         <td><strong>成都银行</strong></td>
         <td class="num">¥18.72</td>
-        <td class="num down">▼-0.16%</td>
+        <td class="num down chg">▼-0.16%</td>
         <td class="num">16.9</td>
         <td class="num">0.86</td>
         <td class="num">0.9%</td>
@@ -1642,7 +1649,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">601128</td>
         <td><strong>常熟银行</strong></td>
         <td class="num">¥7.17</td>
-        <td class="num down">▼-1.38%</td>
+        <td class="num down chg">▼-1.38%</td>
         <td class="num">6.5</td>
         <td class="num">0.74</td>
         <td class="num">1.1%</td>
@@ -1707,7 +1714,7 @@ tr.clickable-row:hover .expand-arrow {background:var(--primary-bg);color:var(--p
         <td style="font-family:var(--font-mono);font-size:12px">601328</td>
         <td><strong>交通银行</strong></td>
         <td class="num">¥6.72</td>
-        <td class="num down">▼-0.15%</td>
+        <td class="num down chg">▼-0.15%</td>
         <td class="num">6.1</td>
         <td class="num">0.51</td>
         <td class="num">1.1%</td>
@@ -2771,13 +2778,23 @@ function filterTable(cat){
     if(cat&&cat!=='📌 全量'){
       if(cat==='🔴 持仓') show=holds.includes(code);
       else if(cat==='📋 跟踪池') show=tracks.includes(code);
-      else if(cat==='🚨 异常') show=false;
+      else if(cat==='🚨 异常'){
+        // 涨跌幅绝对值>4%即标记异常
+        var chgCell=r.querySelector('.num.chg');
+        show=chgCell&&Math.abs(parseFloat(chgCell.textContent))>4;
+      }
     }
-    if(show&&q){var nm=r.cells[2].textContent.toLowerCase();show=code.includes(q)||nm.includes(q);}
+    if(show&&q){var nm=r.cells[2]?.textContent?.toLowerCase().trim()||'';var cd=(r.cells[1]?.textContent||'').trim();show=cd.indexOf(q)>=0||nm.indexOf(q)>=0;}
     r.style.display=show?'':'none';
     var det=document.getElementById('detail-'+code);
     if(det&&!show) det.style.display='none';
   });
+  // 更新计数
+  var all=document.querySelectorAll('#mainTbl tbody tr.main-row');
+  var vis=0;
+  all.forEach(function(r){if(r.style.display!='none')vis++;});
+  var badge=document.querySelector('.filter-count');
+  if(badge) badge.textContent=vis+'/'+all.length;
 }
 
 // Init
