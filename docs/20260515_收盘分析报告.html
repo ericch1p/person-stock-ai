@@ -630,7 +630,7 @@ th,td{padding:6px 8px;}
                 </div>
               </div>
             </td>
-          </tr>      <tr class="main-row" data-code="600578" onclick="toggleDetail('600578')">
+          </tr>      <tr class="main-row" data-code="600578" onclick="toggleDetail('600578')" title="点击展开深度分析">
         <td class="expand-cell"><span class="expand-btn">▶</span></td>
         <td style="font-family:var(--font-mono);font-size:12px">600578</td>
         <td><strong>京能电力</strong></td>
@@ -695,7 +695,7 @@ th,td{padding:6px 8px;}
                 </div>
               </div>
             </td>
-          </tr>      <tr class="main-row" data-code="600509" onclick="toggleDetail('600509')">
+          </tr>      <tr class="main-row" data-code="600509" onclick="toggleDetail('600509')" title="点击展开深度分析">
         <td class="expand-cell"><span class="expand-btn">▶</span></td>
         <td style="font-family:var(--font-mono);font-size:12px">600509</td>
         <td><strong>天富能源</strong></td>
@@ -755,7 +755,7 @@ th,td{padding:6px 8px;}
                 </div>
               </div>
             </td>
-          </tr>      <tr class="main-row" data-code="600256" onclick="toggleDetail('600256')">
+          </tr>      <tr class="main-row" data-code="600256" onclick="toggleDetail('600256')" title="点击展开深度分析">
         <td class="expand-cell"><span class="expand-btn">▶</span></td>
         <td style="font-family:var(--font-mono);font-size:12px">600256</td>
         <td><strong>广汇能源</strong></td>
@@ -815,7 +815,7 @@ th,td{padding:6px 8px;}
                 </div>
               </div>
             </td>
-          </tr>      <tr class="main-row" data-code="000591" onclick="toggleDetail('000591')">
+          </tr>      <tr class="main-row" data-code="000591" onclick="toggleDetail('000591')" title="点击展开深度分析">
         <td class="expand-cell"><span class="expand-btn">▶</span></td>
         <td style="font-family:var(--font-mono);font-size:12px">000591</td>
         <td><strong>太阳能</strong></td>
@@ -880,7 +880,7 @@ th,td{padding:6px 8px;}
                 </div>
               </div>
             </td>
-          </tr>      <tr class="main-row" data-code="601778" onclick="toggleDetail('601778')">
+          </tr>      <tr class="main-row" data-code="601778" onclick="toggleDetail('601778')" title="点击展开深度分析">
         <td class="expand-cell"><span class="expand-btn">▶</span></td>
         <td style="font-family:var(--font-mono);font-size:12px">601778</td>
         <td><strong>晶科科技</strong></td>
@@ -940,7 +940,7 @@ th,td{padding:6px 8px;}
                 </div>
               </div>
             </td>
-          </tr>      <tr class="main-row" data-code="000690" onclick="toggleDetail('000690')">
+          </tr>      <tr class="main-row" data-code="000690" onclick="toggleDetail('000690')" title="点击展开深度分析">
         <td class="expand-cell"><span class="expand-btn">▶</span></td>
         <td style="font-family:var(--font-mono);font-size:12px">000690</td>
         <td><strong>宝新能源</strong></td>
@@ -1005,7 +1005,7 @@ th,td{padding:6px 8px;}
                 </div>
               </div>
             </td>
-          </tr>      <tr class="main-row" data-code="600780" onclick="toggleDetail('600780')">
+          </tr>      <tr class="main-row" data-code="600780" onclick="toggleDetail('600780')" title="点击展开深度分析">
         <td class="expand-cell"><span class="expand-btn">▶</span></td>
         <td style="font-family:var(--font-mono);font-size:12px">600780</td>
         <td><strong>通宝能源</strong></td>
@@ -1550,7 +1550,7 @@ th,td{padding:6px 8px;}
                 </div>
               </div>
             </td>
-          </tr>      <tr class="main-row" data-code="601128" onclick="toggleDetail('601128')">
+          </tr>      <tr class="main-row" data-code="601128" onclick="toggleDetail('601128')" title="点击展开深度分析">
         <td class="expand-cell"><span class="expand-btn">▶</span></td>
         <td style="font-family:var(--font-mono);font-size:12px">601128</td>
         <td><strong>常熟银行</strong></td>
@@ -2547,21 +2547,25 @@ var DEPTH={  "000690":{rank:"🥇 强烈推荐",industry:"新能源电力 · 火
   "601778":{rank:"",industry:"光伏发电",pe:"",pb:"",profit:"",consensus:"",layers:[["志","分布式光伏"],["道","全球布局"],["势","能源革命受益"],["法","利润增长慢"],["术","需要催化剂"],["器","光伏电站运营"]],risk:"补贴依赖大、老电站多",action:"⚠️ 跟踪不介入",metrics:[["PE","6.8","偏低"],["PB","1.65","偏高"],["ROE","24%","高"],["股息率","--","--"]],masters:[],summary:"",position:"",strategy:"",hold_period:"",buy_range:"",stop_loss:"",risk_level:"",summary:""}};
 
 function toggleDetail(code){
-  var det = document.getElementById('detail-'+code);
-  var btn = document.querySelector('.main-row[data-code="'+code+'"] .expand-btn');
-  if(!det||!btn) return;
-  var isOpen = btn.classList.contains('open');
-  if(isOpen){
-    det.style.display = 'none';
-    btn.classList.remove('open');
-    btn.textContent = '▶';
-  }else{
-    det.style.display = '';
-    btn.classList.add('open');
-    btn.textContent = '▼';
-    fillDetail(code);
-    drawKline(code);
-  }
+  try{
+    var det = document.getElementById('detail-'+code);
+    var row = document.querySelector('.main-row[data-code="'+code+'"]');
+    if(!det||!row){console.warn('toggleDetail: no detail row for',code);return;}
+    var btn = row.querySelector('.expand-btn');
+    if(!btn){console.warn('toggleDetail: no expand-btn for',code);return;}
+    var isOpen = btn.classList.contains('open');
+    if(isOpen){
+      det.style.display = 'none';
+      btn.classList.remove('open');
+      btn.textContent = '▶';
+    }else{
+      det.style.display = '';
+      btn.classList.add('open');
+      btn.textContent = '▼';
+      fillDetail(code);
+      drawKline(code);
+    }
+  }catch(e){console.error('toggleDetail error:',e,code);}
 }
 
 function fillDetail(code){
