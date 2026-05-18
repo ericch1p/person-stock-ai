@@ -5748,6 +5748,17 @@ function filterTable(cat){
 
 // Init
 window.addEventListener('load',function(){
+  // 日期选择器切换
+  var sel=document.getElementById('reportDate');
+  if(sel){
+    sel.addEventListener('change',function(){
+      var v=this.value;
+      if(v){
+        var base='https://ericch1p.github.io/person-stock-ai/';
+        window.location.href=base+v+'_%E6%94%B6%E7%9B%98%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A.html';
+      }
+    });
+  }
   filterTable('all');
 });
 </script>
